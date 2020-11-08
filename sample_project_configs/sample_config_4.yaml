@@ -1,0 +1,85 @@
+---
+name: Colegio La Paloma
+#At least a user must be included
+users:
+  - login: pepito
+    name: Pepe Perez
+  - login: mamaria
+    name: Maria Mariana
+  - login: silvia004
+    name: Silvia Salinas
+  - login: arturito
+    name: Arturo Alcántara
+#Quien tenga permiso de acceso ('viewer') a nivel general puede ver todos los paneles y también un meta-panel resumen.
+viewer:
+  - pepito
+#Quien tenga permiso de edicion ('editor') a nivel general puede ver todos los paneles y también un meta-panel resumen.
+editor:
+  - mamaria
+directory:
+  - name: Edificio A
+    #Quien tenga permiso de acceso a nivel de directorio puede ver todos los paneles de los sensores incluidos en ese directorio y también puede ver el panel principal de dicho directorio.
+    viewer:
+      - arturito
+    device:
+      - uid: c2Vuc29yMDAwMDAwMDE=
+        name: Primero A
+      - uid: c2Vuc29yMDAwMDAwMDI=
+        name: Primero B
+        viewer:
+          - silvia004
+      - uid: c2Vuc29yMDAwMDAwMDIC
+        name: Primero C
+      - uid: c2Vuc29yMDAwMDAwMDID
+        name: Primero D
+      - uid: c2Vuc29yMDAwMDAwMDIE
+        name: Primero E
+      - uid: c2Vuc29yMDAwMDAwMDIF
+        name: Primero F
+  - name: Edificio B
+    editor:
+      - silvia004
+    device:
+      - uid: c2Vuc29yMDAwMDAwMDM=
+        name: Segundo A
+        #Quien tenga permiso de acceso a nivel de sensor puede ver el panel asociado al sensor.
+        viewer:
+          - arturito
+      - uid: c2Vuc29yMDAwMDAwMDQ=
+        name: Segundo B
+      - uid: c2Vuc29yMDAwMDAwMDQC
+        name: Segundo C
+      - uid: c2Vuc29yMDAwMDAwMDQD
+        name: Segundo D
+      - uid: c2Vuc29yMDAwMDAwMDQE
+        name: Segundo E
+      - uid: c2Vuc29yMDAwMDAwMDQF
+        name: Segundo F 
+  - name: Edificio C
+    device:
+      - uid: c32Vuc29yMDAwMDAwMDE=
+        name: Tercero A
+      - uid: c32Vuc29yMDAwMDAwMDI=
+        name: Tercero B
+      - uid: c32Vuc29yMDAwMDAwMDIC
+        name: Tercero C
+      - uid: c32Vuc29yMDAwMDAwMDID
+        name: Tercero D
+      - uid: c32Vuc29yMDAwMDAwMDIE
+        name: Tercero E
+      - uid: c32Vuc29yMDAwMDAwMDIF
+        name: Tercero F
+  - name: Edificio D
+    device:
+      - uid: c42Vuc29yMDAwMDAwMDM=
+        name: Cuarto A
+      - uid: c42Vuc29yMDAwMDAwMDQ=
+        name: Cuarto B
+      - uid: c42Vuc29yMDAwMDAwMDQC
+        name: Cuarto C
+      - uid: c42Vuc29yMDAwMDAwMDQD
+        name: Cuarto D
+      - uid: c42Vuc29yMDAwMDAwMDQE
+        name: Cuarto E
+      - uid: c42Vuc29yMDAwMDAwMDQF
+        name: Cuarto F 

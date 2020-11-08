@@ -1,0 +1,64 @@
+{
+  "type": null,
+  "title": null,
+  "gridPos": {
+    "h": null,
+    "w": null,
+    "x": null,
+    "y": null
+  },
+  "links": [
+    {
+      "title": null,
+      "url": null
+    }
+  ],
+  "id": null,
+  "targets": [
+    {
+      "expr": null,
+      "legendFormat": "",
+      "interval": "",
+      "refId": "A"
+    }
+  ],
+  "options": {
+    "reduceOptions": {
+      "values": false,
+      "calcs": [
+        "lastNotNull"
+      ],
+      "fields": ""
+    },
+    "showThresholdLabels": false,
+    "showThresholdMarkers": true
+  },
+  "fieldConfig": {
+    "defaults": {
+      "custom": {},
+      "thresholds": {
+        "mode": "absolute",
+        "steps": [
+          {
+            "color": "green",
+            "value": null
+          },
+          {
+            "color": "yellow",
+            "value": 600
+          },
+          {
+            "value": 800,
+            "color": "dark-red"
+          }
+        ]
+      },
+      "mappings": []
+    },
+    "overrides": []
+  },
+  "pluginVersion": "7.3.1",
+  "timeFrom": null,
+  "timeShift": null,
+  "datasource": null
+}

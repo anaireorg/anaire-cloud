@@ -1,0 +1,336 @@
+{
+  "dashboard": {
+    "id": null,
+    "panels": [
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "CO2 concentration in ${dashboard_title} measured by device ${device}",
+      "fieldConfig": {
+      "defaults": {
+        "custom": {}
+      },
+      "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+      "h": 9,
+      "w": 12,
+      "x": 0,
+      "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 5,
+      "legend": {
+      "avg": false,
+      "current": false,
+      "max": false,
+      "min": false,
+      "show": true,
+      "total": false,
+      "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+      "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+      {
+        "alias": "CO2",
+        "yaxis": 1
+      }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+      {
+        "expr": "CO2{exported_job=\"${device}\"}",
+        "hide": false,
+        "interval": "",
+        "legendFormat": "{{__name__}}",
+        "refId": "A"
+      }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "CO2 Concentration",
+      "tooltip": {
+      "shared": true,
+      "sort": 0,
+      "value_type": "individual"
+      },
+      "transformations": [],
+      "type": "graph",
+      "xaxis": {
+      "buckets": null,
+      "mode": "time",
+      "name": null,
+      "show": true,
+      "values": []
+      },
+      "yaxes": [
+      {
+        "format": "ppm",
+        "label": null,
+        "logBase": 1,
+        "max": null,
+        "min": null,
+        "show": true
+      },
+      {
+        "format": "celsius",
+        "label": null,
+        "logBase": 1,
+        "max": null,
+        "min": null,
+        "show": false
+      }
+      ],
+      "yaxis": {
+      "align": false,
+      "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "Temperature in ${dashboard_title} measured by device ${device}",
+      "fieldConfig": {
+      "defaults": {
+        "custom": {}
+      },
+      "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+      "h": 9,
+      "w": 12,
+      "x": 12,
+      "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 8,
+      "legend": {
+      "avg": false,
+      "current": false,
+      "max": false,
+      "min": false,
+      "show": true,
+      "total": false,
+      "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+      "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+      {
+        "alias": "Temperature",
+        "yaxis": 1
+      }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+      {
+        "expr": "Temperature{exported_job=\"${device}\"}",
+        "hide": false,
+        "interval": "",
+        "legendFormat": "{{__name__}}",
+        "refId": "A"
+      }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Temperature",
+      "tooltip": {
+      "shared": true,
+      "sort": 0,
+      "value_type": "individual"
+      },
+      "transformations": [],
+      "type": "graph",
+      "xaxis": {
+      "buckets": null,
+      "mode": "time",
+      "name": null,
+      "show": true,
+      "values": []
+      },
+      "yaxes": [
+      {
+        "format": "celsius",
+        "label": null,
+        "logBase": 1,
+        "max": null,
+        "min": null,
+        "show": true
+      },
+      {
+        "format": "celsius",
+        "label": null,
+        "logBase": 1,
+        "max": null,
+        "min": null,
+        "show": false
+      }
+      ],
+      "yaxis": {
+      "align": false,
+      "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "Humidity in ${dashboard_title} measured by device ${device}",
+      "fieldConfig": {
+      "defaults": {
+        "custom": {}
+      },
+      "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+      "h": 9,
+      "w": 12,
+      "x": 0,
+      "y": 9
+      },
+      "hiddenSeries": false,
+      "id": 7,
+      "legend": {
+      "avg": false,
+      "current": false,
+      "max": false,
+      "min": false,
+      "show": true,
+      "total": false,
+      "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+      "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+      {
+        "alias": "Humidity",
+        "yaxis": 1
+      }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+      {
+        "expr": "Humidity{exported_job=\"${device}\"}",
+        "hide": false,
+        "interval": "",
+        "legendFormat": "{{__name__}}",
+        "refId": "A"
+      }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Humidity",
+      "tooltip": {
+      "shared": true,
+      "sort": 0,
+      "value_type": "individual"
+      },
+      "transformations": [],
+      "type": "graph",
+      "xaxis": {
+      "buckets": null,
+      "mode": "time",
+      "name": null,
+      "show": true,
+      "values": []
+      },
+      "yaxes": [
+      {
+        "format": "humidity",
+        "label": null,
+        "logBase": 1,
+        "max": null,
+        "min": null,
+        "show": true
+      },
+      {
+        "format": "celsius",
+        "label": null,
+        "logBase": 1,
+        "max": null,
+        "min": null,
+        "show": false
+      }
+      ],
+      "yaxis": {
+      "align": false,
+      "alignLevel": null
+      }
+    }
+    ],
+    "refresh": "1m",
+    "schemaVersion": 26,
+    "style": "light",
+    "tags": [
+    "sensor"
+    ],
+    "templating": {
+    "list": []
+    },
+    "time": {
+    "from": "now-1h",
+    "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "browser",
+    "title": "${dashboard_title}",
+    "uid": null,
+    "version": 0
+  },
+  "folderId": ${folder_id},
+  "overwrite": true
+}

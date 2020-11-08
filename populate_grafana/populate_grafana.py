@@ -1,0 +1,351 @@
+#!/usr/bin/env python
+
+import yaml
+import sys
+import json
+import requests
+import base64
+from grafana_api.grafana_face import GrafanaFace
+
+if (len(sys.argv) != 4):
+  print('Usage: '+sys.argv[0]+' <Grafana URL> <admin password> <configuration filename>')
+  exit()
+
+#GLOBAL VARIABLES
+GRAFANA_URL=sys.argv[1]
+password=sys.argv[2]
+config_file=sys.argv[3]
+username = 'admin'
+num_panel_per_row = 5
+h_panel = 6
+w_panel = 3
+panel_type="gauge"  #It can be "gauge" or "stat"
+grafana_api = GrafanaFace(auth=(username,password),host=GRAFANA_URL)
+file = open('device_dashboard.json')
+device_dashboard_template_json = file.read()
+file.close()
+file = open('folder_dashboard.json')
+folder_dashboard_template_json = file.read()
+file.close()
+file = open('device_panel.json')
+device_panel_template_json = file.read()
+file.close()
+
+#TODO - Hacer script idempotente
+#Borrar elementos?? creo que no
+
+def strToBase64(text):
+  return base64.b64encode((text).encode('ascii')).decode('ascii')
+
+def post(URL,DATA,HEADERS):
+  try:
+    response = requests.post(url=URL, data=DATA,headers=HEADERS)
+    return response.content
+
+  except requests.exceptions.RequestException as e:  # This is the correct syntax
+    raise SystemExit(e)
+    
+def put(URL,DATA,HEADERS):
+  try:
+    response = requests.put(url=URL, data=DATA,headers=HEADERS)
+    return response.content
+
+  except requests.exceptions.RequestException as e:  # This is the correct syntax
+    raise SystemExit(e)
+
+def get_user_password(login):
+  return strToBase64(login);
+  
+def update_user_preferences(login, update):
+  URL  = 'http://'+GRAFANA_URL+'/api/user/preferences'
+  HEADERS = {'Authorization': 'Basic '+base64.b64encode((login+':'+get_user_password(login)).encode('ascii')).decode('ascii'), 'Content-type': 'application/json'}
+  return put(URL,json.dumps(update),HEADERS)
+
+def get_folder(title):
+  folders=grafana_api.search.search_dashboards(query=title, type_='dash-folder')
+  return next((item for item in folders if item['title'] == title), None)
+  
+def createFolder(title):
+  folder = get_folder(title)
+  if not folder:
+      folder=grafana_api.folder.create_folder(title)
+  return folder
+  
+def updateFolderPermissions(title, permissions):
+  folder_uid = get_folder(title)['uid']
+  grafana_api.folder.update_folder_permissions(folder_uid, permissions)
+
+def createTeam(name):
+  team=grafana_api.teams.get_team_by_name(name)
+  if (len(team)==0):
+    team=grafana_api.teams.add_team({'name':name})
+    teamId=team['teamId']
+  else:
+    teamId=team[0]['id']
+  return teamId
+
+def addTeamToFolder(team_name, folder_uid, role):
+  if role=='Viewer':
+    permission = 1
+  elif role=='Editor':
+    permission = 2
+  
+  team_id = grafana_api.teams.get_team_by_name(team_name)[0]['id']
+  items = grafana_api.folder.get_folder_permissions(folder_uid)
+  #Add team if not present in the folder permission
+  if not next((item for item in items if item['teamId'] == team_id), None):
+    items.append({'teamId': team_id, 'permission': permission, "permissionName": role})
+    permissions = {'items': items}
+    return grafana_api.folder.update_folder_permissions(folder_uid, permissions)
+  else:
+    return {'message': 'Team already present'}
+  
+def createUser(user_data):
+  user=grafana_api.users.search_users(query=user_data['login'])
+  if not user:
+      user=grafana_api.admin.create_user(user_data)
+  else:
+      user=user[0]
+  return user['id']
+  
+def addUserToTeam(user_login, team_name):
+  user_id=grafana_api.users.search_users(query=user_login)[0]['id']
+  team_id=grafana_api.teams.get_team_by_name(team_name)[0]['id']
+  members=grafana_api.teams.get_team_members(team_id)
+  if not next((item for item in members if item['login'] == user_login), None):
+    grafana_api.teams.add_team_member(team_id, user_id)
+
+def get_dashboard(folder_title, dashboard_title):
+  dashboards=grafana_api.search.search_dashboards(query=dashboard_title, type_='dash-db')
+  folder_uid = get_folder(folder_title)['uid']
+  return next((item for item in dashboards if item['title'] == dashboard_title and item['folderUid'] == folder_uid), None)
+  
+def addTeamToDashboard(team_name, folder_title, dashboard_title, role):
+  if role=='Viewer':
+    permission = 1
+  elif role=='Editor':
+    permission = 2
+  
+  team_id = grafana_api.teams.get_team_by_name(team_name)[0]['id']
+  dashboard_id = get_dashboard(folder_title, dashboard_title)['id']
+  items = grafana_api.dashboard.get_dashboard_permissions(dashboard_id)
+  #Add team if not present in the folder permission
+  if not next((item for item in items if item['teamId'] == team_id), None):
+    updated_items = list()
+    for item in items:
+      if not item.get('inherited',False):
+        updated_items.append(item)
+        
+    updated_items.append({'teamId': team_id, 'permission': permission, "permissionName": role})
+    permissions = {'items': updated_items}
+    return grafana_api.dashboard.update_dashboard_permissions(dashboard_id, permissions)
+  else:
+    return {'message': 'Team already present'}
+
+def main():
+  with open(config_file, 'r') as stream:
+    try:
+      config = yaml.safe_load(stream)
+      users = config["users"]
+      teams = dict()
+      
+      #Iterate trough users creating them
+      for user in users:
+        print("Creating user "+user['login']+"...")
+        user['password']=get_user_password(user['login'])
+        createUser(user)
+        content = update_user_preferences(user['login'],{'theme': 'light'})
+      
+      #Add all users listed as vierwer to the 'general_viewer' team 
+      if ("viewer" in config):
+        #Create a team to provide viewer rigths to all dashboards
+        #general_viewer
+        print("Creating general_viewer team...")
+        createTeam('general_viewer')
+        teams['general_viewer']=list()
+        viewer = config["viewer"]
+        for user in viewer:
+          print("Adding user "+user+" to \'general_viewer\' team...")
+          teams['general_viewer'].append(user)
+          addUserToTeam(user,'general_viewer')
+      
+      #Add all users listed as editor to the 'general_editor' team    
+      if ("editor" in config):
+        #Create a team to provide editor rights to all dashboards
+        #general_editor
+        print("Creating general_editor team...")
+        createTeam('general_editor')
+        teams['general_editor']=list()
+        editor = config["editor"]
+        for user in editor:
+          print("Adding user "+user+" to \'general_editor\' team...")
+          teams['general_editor'].append(user)
+          addUserToTeam(user,'general_editor')
+          
+      #Initialize main dashboard
+      main_dashboard_json = json.loads(folder_dashboard_template_json.replace('${folder_title}',config['name']).replace('${folder_id}',str(0)))
+      main_dashboard_json['dashboard']['tags'] = ['overview']
+      main_dashboard_next_y = 0
+         
+      cont3 = 0 
+      directories = config['directory']
+      for directory in directories:
+        dir_name = directory['name']
+        cont2 = 0
+        
+        #Separator row for main dashboard
+        row = {
+          "collapsed": False,
+          "datasource": None,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": main_dashboard_next_y
+          },
+          "id": 300+cont3,
+          "panels": [],
+          "title": dir_name,
+          "type": "row"
+        }
+        main_dashboard_json['dashboard']['panels'].append(row)
+        
+        print('Creating folder '+dir_name)
+        folder = createFolder(dir_name)
+        folderId = folder['id']
+        folder_uid = folder['uid']
+        #Remove default permissions
+        grafana_api.folder.update_folder_permissions(folder_uid, {'items': []})
+        #Add 'general' teams permissions
+        addTeamToFolder('general_viewer', folder_uid, 'Viewer')
+        addTeamToFolder('general_editor', folder_uid, 'Editor')
+        
+        #Initialize folder dashboard json
+        folder_dashboard_json = json.loads(folder_dashboard_template_json.replace('${folder_title}','Main').replace('${folder_id}',str(folderId)))
+        folder_dashboard_json['dashboard']['tags'] = ['overview','folder']
+      
+        #Add all users listed as vierwer to the directory viewer team 
+        if ("viewer" in directory):
+          #Create a team to provide viewer rights to all dashboards in the directory
+          print("  Creating \'"+dir_name+"_viewer\' team...")
+          createTeam(dir_name+'_viewer')
+          teams[dir_name+'_viewer']=list()
+          addTeamToFolder(dir_name+'_viewer', folder_uid, 'Viewer')
+          
+          viewer = directory["viewer"]
+          for user in viewer:
+            print("    Adding user \'"+user+"\' to \'"+dir_name+"_viewer\' team...")
+            teams[dir_name+'_viewer'].append(user)
+            addUserToTeam(user,dir_name+'_viewer')
+        
+        #Add all users listed as editor to the directory editor team    
+        if ("editor" in directory):
+          #Create a team to provide editor rights to all dashboards in the directory
+          print("  Creating \'"+dir_name+"_editor\' team...")
+          createTeam(dir_name+'_editor')
+          teams[dir_name+'_editor']=list()
+          addTeamToFolder(dir_name+'_editor', folder_uid, 'Editor')
+          
+          editor = directory["editor"]
+          for user in editor:
+            print("    Adding user \'"+user+"\' to \'"+dir_name+"_editor\' team...")
+            teams[dir_name+'_editor'].append(user)
+            addUserToTeam(user,dir_name+'_editor')
+            
+        #Iterate through all devices
+        cont = 0
+        for device in directory["device"]:
+          dev_name = device["name"]
+          dev_uid = device["uid"]
+          print('  '+dev_name+':')
+          
+          #Create device detailed dashboard 
+          print("    Creating device \'"+dev_name+"\' dashboard..." )
+          dashboard_text = device_dashboard_template_json.replace('${dashboard_title}',dev_name).replace('${folder_id}',str(folderId)).replace('${device}',dev_uid)
+          dashboard=grafana_api.dashboard.update_dashboard(json.loads(dashboard_text))
+          
+          
+          #Create device CO2 panel
+          device_panel_url='http://'+GRAFANA_URL+dashboard['url']
+          device_panel_json = json.loads(device_panel_template_json)
+          device_panel_json['type'] = panel_type
+          device_panel_json['title'] = dev_name
+          device_panel_json['links'][0]['title'] = 'Go to '+dev_name
+          device_panel_json['links'][0]['url'] = device_panel_url
+          device_panel_json["gridPos"]['x'] = 0
+          device_panel_json["gridPos"]['y'] = 0
+          device_panel_json["gridPos"]['w'] = w_panel
+          device_panel_json["gridPos"]['h'] = h_panel
+          device_panel_json['targets'][0]['expr'] = "CO2{exported_job=\""+dev_uid+"\"}"
+          device_panel_json['id'] = cont3+2
+          
+          #Create device CO2 dashboard
+          device_CO2_dashboard_json = json.loads(folder_dashboard_template_json.replace('${folder_title}',dev_name+' CO2').replace('${folder_id}',str(folderId)))
+          device_CO2_dashboard_json['dashboard']['tags'] = ['overview', 'sensor']
+          device_CO2_dashboard_json['dashboard']['panels'].append(dict(device_panel_json))
+          device_CO2_dashboard=grafana_api.dashboard.update_dashboard(device_CO2_dashboard_json)
+        
+          #Add panel to folder dashboard
+          device_panel_json["gridPos"]['x'] = int(cont%num_panel_per_row)*w_panel
+          device_panel_json["gridPos"]['y'] = int(cont/num_panel_per_row)*h_panel
+          folder_dashboard_json['dashboard']['panels'].append(dict(device_panel_json))
+          
+          #add panel to main dashboard
+          x = int(cont2%num_panel_per_row)*w_panel
+          y = int(cont2/num_panel_per_row)*h_panel + 1 + main_dashboard_next_y
+          #y_local = int(cont2/num_panel_per_row)*h_panel
+          #if not y_local: y+=main_dashboard_y_offset
+          device_panel_json["gridPos"]['x'] = x
+          device_panel_json["gridPos"]['y'] = y
+          main_dashboard_json['dashboard']['panels'].append(dict(device_panel_json))
+          
+          cont+=1
+          cont2+=1
+          cont3+=1
+          
+          #Add all users listed as vierwer to the device viewer team
+          if ("viewer" in device):
+            #Create team to provide viewer rights to the device dashboard
+            print("    Creating \'"+dir_name+"_"+dev_name+"_viewer\' team...")
+            createTeam(dir_name+"_"+dev_name+'_viewer')
+            teams[dir_name+"_"+dev_name+'_viewer']=list()
+            addTeamToDashboard(dir_name+"_"+dev_name+'_viewer', folder['title'], dev_name, 'Viewer')
+            addTeamToDashboard(dir_name+"_"+dev_name+'_viewer', folder['title'], dev_name+' CO2', 'Viewer')
+            
+            viewer = device["viewer"]
+            for user in viewer:
+              print("      Adding user \'"+user+"\' to \'"+dir_name+"_"+dev_name+"_viewer\' team...")
+              teams[dir_name+"_"+dev_name+'_viewer'].append(user)
+              addUserToTeam(user,dir_name+"_"+dev_name+'_viewer')
+              update_user_preferences(user,{'theme': 'light','homeDashboardId': device_CO2_dashboard['id']})
+              
+          #Add all users listed as editor to the device viewer team
+          if ("editor" in device):
+            #Create team to provide editor rights to the device dashboard
+            print("    Creating \'"+dir_name+"_"+dev_name+"_editor\' team...")
+            createTeam(dir_name+"_"+dev_name+'_editor')
+            teams[dir_name+"_"+dev_name+'_editor']=list()
+            addTeamToDashboard(dir_name+"_"+dev_name+'_editor', folder['title'], dev_name, 'Editor')
+            
+            editor = device["editor"]
+            for user in editor:
+              print("      Adding user \'"+user+"\' to \'"+dir_name+"_"+dev_name+"_editor\' team...")
+              teams[dir_name+"_"+dev_name+'_editor'].append(user)
+              addUserToTeam(user,dir_name+"_"+dev_name+'_editor')
+              
+        main_dashboard_next_y = y + h_panel
+          
+        #Create summary dashboard for directory 
+        print("  Creating \'"+dir_name+"\' dashboard..." )
+        dashboard=grafana_api.dashboard.update_dashboard(folder_dashboard_json)
+      
+      #Create general summay dashboard
+      print("Creating \'"+config['name']+"\' dashboard..." )
+      main_dashboard=grafana_api.dashboard.update_dashboard(main_dashboard_json)
+      #print(yaml.safe_dump(main_dashboard_json['dashboard']['panels']))
+      
+    except yaml.YAMLError as exc:
+      print(exc)
+
+if __name__ == "__main__":
+  main()

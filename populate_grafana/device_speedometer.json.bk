@@ -1,0 +1,67 @@
+{
+  "datasource": null,
+  "fieldConfig": {
+    "defaults": {
+      "custom": {},
+      "mappings": [],
+      "thresholds": {
+        "mode": "absolute",
+        "steps": [
+          {
+            "color": "green",
+            "value": 0
+          },
+          {
+            "color": "dark-yellow",
+            "value": 700
+          },
+          {
+            "color": "dark-orange",
+            "value": 1000
+          },
+          {
+            "color": "dark-red",
+            "value": 1200
+          }
+        ]
+      }
+    },
+    "overrides": []
+  },
+  "gridPos": {
+    "h": ${h},
+    "w": ${w},
+    "x": ${x},
+    "y": ${y}
+  },
+  "links": [
+    {
+      "title": "Go to ${panel_title}",
+      "url": "${url}"
+    }
+],
+  "id": "${id}",
+  "options": {
+    "orientation": "auto",
+    "reduceOptions": {
+      "calcs": [
+        "last"
+      ],
+      "fields": "",
+      "values": false
+    },
+    "showThresholdLabels": false,
+    "showThresholdMarkers": true
+  },
+  "pluginVersion": "7.2.2",
+  "targets": [
+    {
+      "expr": "CO2{exported_job=\"${device}\"}",
+      "interval": "",
+      "legendFormat": "{{__name__}}",
+      "refId": "A"
+    }
+  ],
+  "title": "${panel_title}",
+  "type": "gauge"
+}
