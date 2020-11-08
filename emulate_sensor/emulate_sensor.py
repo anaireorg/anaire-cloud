@@ -13,6 +13,19 @@ minimum_CO2 = 450  #minimum C=2 concentration in the room
 CO2_base_increment = random.randint(4,6)  #ppm of CO2 incremented in a minute
 open_window_CO2_decrement = 9 #ppm of CO2 decremented in a minute when a window is opened
 
+#Temperature consts
+minimum_temperature = 15.0
+maximum_temperature = 22.0
+temperature_base_increment = 0.05  #Celsius increment per minute during class
+open_window_temp_decrement = 0.13 #Celsius decrement per minute when the window is opened
+
+#Humidity consts
+minimum_humidity = 50
+maximum_humidity = 70
+humidity_base_decrement = 0.1  #%humidity decremented per minute during class
+open_window_humidity_increment = 0.13 #%humidity incremented per minute when the window is opened
+
+
 schedule = [
     [8*60 + 35, 9*60 + 25],
     [9*60 + 35, 10*60 + 25],
@@ -27,7 +40,7 @@ def main():
     if random.choice([True,False]): CO2_increment -= 1
      
     #Emulate if the window is opened 30%, 50%, 100% during class
-    CO2_increment -=  open_window_CO2_decrement * int(random.choice([0.3, 0.5, 1]) )
+    CO2_increment -=  int(open_window_CO2_decrement * random.choice([0, 0.3, 0.5, 1]) )
 
     last_value = 0
     if accelerated: now = 8*60 + 30  #If accelerated is set emulate to start at 8:30AM
