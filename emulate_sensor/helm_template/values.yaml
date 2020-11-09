@@ -1,0 +1,9 @@
+# Default values for device-emulator.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+device_uid: null
+pusgatewayURL: null
+windowPercentage: 0
+
+
+
