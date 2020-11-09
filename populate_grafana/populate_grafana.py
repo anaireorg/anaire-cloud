@@ -16,9 +16,9 @@ GRAFANA_URL=sys.argv[1]
 password=sys.argv[2]
 config_file=sys.argv[3]
 username = 'admin'
-num_panel_per_row = 5
+num_panel_per_row = 3
 h_panel = 6
-w_panel = 3
+w_panel = 5
 panel_type="gauge"  #It can be "gauge" or "stat"
 grafana_api = GrafanaFace(auth=(username,password),host=GRAFANA_URL)
 file = open('device_dashboard.json')
