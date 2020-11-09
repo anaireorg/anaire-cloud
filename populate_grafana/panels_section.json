@@ -1,0 +1,14 @@
+{
+  "collapsed": false,
+  "datasource": null,
+  "gridPos": {
+    "h": 1,
+    "w": 24,
+    "x": ${x},
+    "y": ${y}
+  },
+  "id": 4,
+  "panels": [],
+  "title": null,
+  "type": "row"
+}

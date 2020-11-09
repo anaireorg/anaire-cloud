@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: device-emulator
+  template:
+    metadata:
+      labels:
+        app: device-emulator
+        device: {{ .Values.device_uid }}
+      annotations:
+#        timestamp: "{{ date "20060102150405" .Release.Time }}"
+    spec:
+      containers:
+      - name: device-emulator
+        image: ubuntu:18.04
+        command:
+        - "/config/run.sh"
+        args: [ " {{ .Values.pusgatewayURL }} {{ .Values.device_uid }} {{ .Values.windowPercentage }}" ]
+        volumeMounts:
+          - name: {{ .Release.Name }}-volume
+            mountPath: "/config"
+            readOnly: false
+      volumes:
+        - name: {{ .Release.Name }}-volume
+          configMap:
+            name: {{ .Release.Name }}-configmap
+            defaultMode: 0744

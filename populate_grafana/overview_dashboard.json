@@ -1,0 +1,20 @@
+{
+  "dashboard": {
+    "id": null,
+    "panels": [],
+    "uid": null,
+    "title": null,
+    "tags": [],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 0,
+    "style": "light",
+    "refresh": "1m",
+    "time": {
+    "from": "now-1h",
+    "to": "now"
+    }
+  },
+  "folderId": null,
+  "overwrite": true
+}

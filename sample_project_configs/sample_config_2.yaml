@@ -1,0 +1,41 @@
+---
+name: Colegio La Paloma
+#At least a user must be included
+users:
+  - login: pepito
+    name: Pepe Perez
+  - login: mamaria
+    name: Maria Mariana
+  - login: silvia004
+    name: Silvia Salinas
+  - login: arturito
+    name: Arturo Alcántara
+#Quien tenga permiso de acceso ('viewer') a nivel general puede ver todos los paneles y también un meta-panel resumen.
+viewer:
+  - pepito
+#Quien tenga permiso de edicion ('editor') a nivel general puede ver todos los paneles y también un meta-panel resumen.
+editor:
+  - mamaria
+directory:
+  - name: Edificio A
+    #Quien tenga permiso de acceso a nivel de directorio puede ver todos los paneles de los sensores incluidos en ese directorio y también puede ver el panel principal de dicho directorio.
+    viewer:
+      - arturito
+    device:
+      - uid: c2Vuc29yMDAwMDAwMDE=
+        name: Primero A
+      - uid: c2Vuc29yMDAwMDAwMDI=
+        name: Primero B
+        viewer:
+          - silvia004
+  - name: Edificio B
+    editor:
+      - silvia004
+    device:
+      - uid: c2Vuc29yMDAwMDAwMDM=
+        name: Segundo A
+        #Quien tenga permiso de acceso a nivel de sensor puede ver el panel asociado al sensor.
+        viewer:
+          - arturito
+      - uid: c2Vuc29yMDAwMDAwMDQ=
+        name: Segundo B
