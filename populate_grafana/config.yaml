@@ -4,7 +4,7 @@ username: admin
 overview_dashboards:
     num_panel_per_row: 3
     panel_height: 6
-    panel_weight: 5
+    panel_weight: 6
     panel_type: gauge  #It can be [gauge, stat]
     thresholds:
         warning: 700
