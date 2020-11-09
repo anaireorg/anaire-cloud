@@ -9,14 +9,14 @@ import json
 
 
 if (len(sys.argv) != 4):
-  print('Usage: '+sys.argv[0]+' <Pushgateway host:port> <sensor_uuid> <percentage 0-1 of opened window during class>')
+  print('Usage: '+sys.argv[0]+' <Pushgateway host:port> <sensor_uuid> <percentage [0-100] of opened window during class>')
   exit()
 
 #general consts
 accelerated = False
 metrics_interval = 30   #How much to wait prior to send a new emulated measurement
 #open_window_percentage_during_class= random.choice([0, 0.3, 0.5, 1])
-open_window_percentage_during_class = float(sys.argv[3])
+open_window_percentage_during_class = float(sys.argv[3])/100
 URL  = 'http://'+sys.argv[1]+'/metrics/job/'+sys.argv[2]
 HEADERS = {'X-Requested-With': 'Python requests', 'Content-type': 'text/xml'}
 
