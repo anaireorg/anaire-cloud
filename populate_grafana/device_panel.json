@@ -45,10 +45,10 @@
           },
           {
             "color": "yellow",
-            "value": 600
+            "value": 700
           },
           {
-            "value": 800,
+            "value": 1000,
             "color": "dark-red"
           }
         ]

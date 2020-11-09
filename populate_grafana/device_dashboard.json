@@ -63,7 +63,16 @@
         "refId": "A"
       }
       ],
-      "thresholds": [],
+      "thresholds": [
+        {
+          "value": 1000,
+          "colorMode": "critical",
+          "op": "gt",
+          "fill": false,
+          "line": true,
+          "yaxis": "left"
+        }
+      ],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
@@ -87,9 +96,10 @@
         "format": "ppm",
         "label": null,
         "logBase": 1,
-        "max": null,
-        "min": null,
-        "show": true
+        "max": 2000,
+        "min": 400,
+        "show": true,
+        "decimals": 0
       },
       {
         "format": "celsius",
@@ -294,8 +304,8 @@
         "format": "humidity",
         "label": null,
         "logBase": 1,
-        "max": null,
-        "min": null,
+        "max": 100,
+        "min": 0,
         "show": true,
         "decimals": 0
       },
