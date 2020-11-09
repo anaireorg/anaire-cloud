@@ -9,6 +9,6 @@
   },
   "id": 4,
   "panels": [],
-  "title": ${title},
+  "title": null,
   "type": "row"
 }

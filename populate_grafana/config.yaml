@@ -1,0 +1,63 @@
+language: spanish
+username: admin
+
+overview_dashboards:
+    num_panel_per_row: 3
+    panel_height: 6
+    panel_weight: 5
+    panel_type: gauge  #It can be [gauge, stat]
+    thresholds:
+        warning: 700
+        caution: 1000 
+
+messages:
+
+    english:
+        tags:
+            overview: 'overview'
+            device: 'sensor'
+            folder: 'folder'
+        device_dashboard:
+            CO2:
+                title: 'CO2 Concentration'
+                description: 
+                - 'CO2 concentration in '
+                - ' measured by device '
+            temperature:
+                title: 'Temperature'
+                description: 
+                - 'Temperature in '
+                - ' measured by device '
+            humidity:
+                title: 'Humidity'
+                description: 
+                - 'Humidity in '
+                - ' measured by device '
+        overview_dashboard:
+            title: 'Main Dashboard'
+            link: 'Go to '
+
+    spanish:
+        tags:
+            overview: 'resumen'
+            device: 'sensor'
+            folder: 'carpeta'
+        device_dashboard: 
+            CO2:
+                title: 'Concentración de CO2'
+                description: 
+                - 'Concentración de CO2 en '
+                - ' medido por el dispositivo '
+            temperature:
+                title: 'Temperatura'
+                description: 
+                - 'Temperatura en '
+                - ' medida por el dispositivo '
+            humidity:
+                title: 'Humedad'
+                description: 
+                - 'Humedad en '
+                - ' medida por el dispositivo '
+        overview_dashboard:
+            title: 'Panel Principal'
+            link: 'Ir a '

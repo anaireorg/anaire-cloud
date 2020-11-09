@@ -8,7 +8,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
-      "description": "CO2 concentration in ${dashboard_title} measured by device ${device}",
+      "description": null,
       "fieldConfig": {
       "defaults": {
         "custom": {}
@@ -56,7 +56,7 @@
       "steppedLine": false,
       "targets": [
       {
-        "expr": "CO2{exported_job=\"${device}\"}",
+        "expr": null,
         "hide": false,
         "interval": "",
         "legendFormat": "{{__name__}}",
@@ -65,7 +65,7 @@
       ],
       "thresholds": [
         {
-          "value": 1000,
+          "value": null,
           "colorMode": "critical",
           "op": "gt",
           "fill": false,
@@ -76,7 +76,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "CO2 Concentration",
+      "title": null,
       "tooltip": {
       "shared": true,
       "sort": 0,
@@ -121,7 +121,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
-      "description": "Temperature in ${dashboard_title} measured by device ${device}",
+      "description": null,
       "fieldConfig": {
       "defaults": {
         "custom": {}
@@ -169,7 +169,7 @@
       "steppedLine": false,
       "targets": [
       {
-        "expr": "Temperature{exported_job=\"${device}\"}",
+        "expr": null,
         "hide": false,
         "interval": "",
         "legendFormat": "{{__name__}}",
@@ -180,7 +180,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Temperature",
+      "title": null,
       "tooltip": {
       "shared": true,
       "sort": 0,
@@ -225,7 +225,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
-      "description": "Humidity in ${dashboard_title} measured by device ${device}",
+      "description": null,
       "fieldConfig": {
       "defaults": {
         "custom": {}
@@ -273,7 +273,7 @@
       "steppedLine": false,
       "targets": [
       {
-        "expr": "Humidity{exported_job=\"${device}\"}",
+        "expr": null,
         "hide": false,
         "interval": "",
         "legendFormat": "{{__name__}}",
@@ -284,7 +284,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Humidity",
+      "title": null,
       "tooltip": {
       "shared": true,
       "sort": 0,
@@ -339,10 +339,10 @@
     },
     "timepicker": {},
     "timezone": "browser",
-    "title": "${dashboard_title}",
+    "title": null,
     "uid": null,
     "version": 0
   },
-  "folderId": ${folder_id},
+  "folderId": null,
   "overwrite": true
 }

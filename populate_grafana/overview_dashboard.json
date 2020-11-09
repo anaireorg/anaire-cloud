@@ -3,7 +3,7 @@
     "id": null,
     "panels": [],
     "uid": null,
-    "title": "${folder_title}",
+    "title": null,
     "tags": [],
     "timezone": "browser",
     "schemaVersion": 16,
@@ -15,6 +15,6 @@
     "to": "now"
     }
   },
-  "folderId": ${folder_id},
+  "folderId": null,
   "overwrite": true
 }

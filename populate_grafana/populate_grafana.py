@@ -12,19 +12,23 @@ if (len(sys.argv) != 4):
   exit()
 
 #GLOBAL VARIABLES
+file = open('config.yaml')
+dashboard_config = yaml.safe_load(file.read())
+file.close()
 GRAFANA_URL=sys.argv[1]
 password=sys.argv[2]
 config_file=sys.argv[3]
-username = 'admin'
-num_panel_per_row = 3
-h_panel = 6
-w_panel = 5
-panel_type="gauge"  #It can be "gauge" or "stat"
+username = dashboard_config['username']
+language = dashboard_config['language']
+num_panel_per_row = dashboard_config['overview_dashboards']['num_panel_per_row']
+h_panel = dashboard_config['overview_dashboards']['panel_height']
+w_panel = dashboard_config['overview_dashboards']['panel_weight']
+panel_type = dashboard_config['overview_dashboards']['panel_type']
 grafana_api = GrafanaFace(auth=(username,password),host=GRAFANA_URL)
 file = open('device_dashboard.json')
 device_dashboard_template_json = file.read()
 file.close()
-file = open('folder_dashboard.json')
+file = open('overview_dashboard.json')
 folder_dashboard_template_json = file.read()
 file.close()
 file = open('device_panel.json')
@@ -183,8 +187,10 @@ def main():
           addUserToTeam(user,'general_editor')
           
       #Initialize main dashboard
-      main_dashboard_json = json.loads(folder_dashboard_template_json.replace('${folder_title}',config['name']).replace('${folder_id}',str(0)))
-      main_dashboard_json['dashboard']['tags'] = ['overview']
+      main_dashboard_json = json.loads(folder_dashboard_template_json)
+      main_dashboard_json['folderId'] = 0
+      main_dashboard_json['dashboard']['title'] = config['name']
+      main_dashboard_json['dashboard']['tags'] = [ dashboard_config['messages'][language]['tags']['overview'] ]
       main_dashboard_next_y = 0
          
       cont3 = 0 
@@ -221,8 +227,10 @@ def main():
         addTeamToFolder('general_editor', folder_uid, 'Editor')
         
         #Initialize folder dashboard json
-        folder_dashboard_json = json.loads(folder_dashboard_template_json.replace('${folder_title}','Main').replace('${folder_id}',str(folderId)))
-        folder_dashboard_json['dashboard']['tags'] = ['overview','folder']
+        folder_dashboard_json = json.loads(folder_dashboard_template_json)
+        folder_dashboard_json['folderId'] = folderId
+        folder_dashboard_json['dashboard']['title'] = dashboard_config['messages'][language]['overview_dashboard']['title']
+        folder_dashboard_json['dashboard']['tags'] = [dashboard_config['messages'][language]['tags']['overview'],dashboard_config['messages'][language]['tags']['folder']]
       
         #Add all users listed as vierwer to the directory viewer team 
         if ("viewer" in directory):
@@ -261,27 +269,51 @@ def main():
           
           #Create device detailed dashboard 
           print("    Creating device \'"+dev_name+"\' dashboard..." )
-          dashboard_text = device_dashboard_template_json.replace('${dashboard_title}',dev_name).replace('${folder_id}',str(folderId)).replace('${device}',dev_uid)
-          dashboard=grafana_api.dashboard.update_dashboard(json.loads(dashboard_text))
+          dashboard_json = json.loads(device_dashboard_template_json)
+          dashboard_json['dashboard']['title'] = dev_name
+          dashboard_json['folderId'] = folderId
           
+          dashboard_json['dashboard']['panels'][0]['title'] = dashboard_config['messages'][language]['device_dashboard']['CO2']['title']
+          dashboard_json['dashboard']['panels'][0]['description'] = dashboard_config['messages'][language]['device_dashboard']['CO2']['description'][0] + dev_name + \
+            dashboard_config['messages'][language]['device_dashboard']['CO2']['description'][1] + dev_uid
+          dashboard_json['dashboard']['panels'][0]['targets'][0]['expr'] = "CO2{exported_job=\""+dev_uid+"\"}"
+          dashboard_json['dashboard']['panels'][0]['thresholds'][0]['value'] = dashboard_config['overview_dashboards']['thresholds']['caution']
+          
+          dashboard_json['dashboard']['panels'][1]['title'] = dashboard_config['messages'][language]['device_dashboard']['temperature']['title']
+          dashboard_json['dashboard']['panels'][1]['description'] = dashboard_config['messages'][language]['device_dashboard']['temperature']['description'][0] + dev_name + \
+            dashboard_config['messages'][language]['device_dashboard']['temperature']['description'][1] + dev_uid
+          dashboard_json['dashboard']['panels'][1]['targets'][0]['expr'] = "Temperature{exported_job=\""+dev_uid+"\"}"
+          
+          dashboard_json['dashboard']['panels'][2]['title'] = dashboard_config['messages'][language]['device_dashboard']['humidity']['title']
+          dashboard_json['dashboard']['panels'][2]['description'] = dashboard_config['messages'][language]['device_dashboard']['humidity']['description'][0] + dev_name + \
+            dashboard_config['messages'][language]['device_dashboard']['humidity']['description'][1] + dev_uid
+          dashboard_json['dashboard']['panels'][2]['targets'][0]['expr'] = "Humidity{exported_job=\""+dev_uid+"\"}"
+
+          dashboard=grafana_api.dashboard.update_dashboard(dashboard_json)
           
           #Create device CO2 panel
           device_panel_url='http://'+GRAFANA_URL+dashboard['url']
           device_panel_json = json.loads(device_panel_template_json)
           device_panel_json['type'] = panel_type
           device_panel_json['title'] = dev_name
-          device_panel_json['links'][0]['title'] = 'Go to '+dev_name
+          device_panel_json['links'][0]['title'] = dashboard_config['messages'][language]['overview_dashboard']['link']+dev_name
           device_panel_json['links'][0]['url'] = device_panel_url
           device_panel_json["gridPos"]['x'] = 0
           device_panel_json["gridPos"]['y'] = 0
           device_panel_json["gridPos"]['w'] = w_panel
           device_panel_json["gridPos"]['h'] = h_panel
           device_panel_json['targets'][0]['expr'] = "CO2{exported_job=\""+dev_uid+"\"}"
+          device_panel_json['fieldConfig']['defaults']['thresholds']['steps'][1]['value'] = dashboard_config['overview_dashboards']['thresholds']['warning']
+          device_panel_json['fieldConfig']['defaults']['thresholds']['steps'][2]['value'] = dashboard_config['overview_dashboards']['thresholds']['caution']
           device_panel_json['id'] = cont3+2
           
           #Create device CO2 dashboard
-          device_CO2_dashboard_json = json.loads(folder_dashboard_template_json.replace('${folder_title}',dev_name+' CO2').replace('${folder_id}',str(folderId)))
-          device_CO2_dashboard_json['dashboard']['tags'] = ['overview', 'sensor']
+          device_CO2_dashboard_json = json.loads(folder_dashboard_template_json)
+          
+          device_CO2_dashboard_json['dashboard']['title'] = dev_name+' CO2'
+          device_CO2_dashboard_json['folderId'] = folderId
+
+          device_CO2_dashboard_json['dashboard']['tags'] = [dashboard_config['messages'][language]['tags']['overview'], dashboard_config['messages'][language]['tags']['device']]
           device_CO2_dashboard_json['dashboard']['panels'].append(dict(device_panel_json))
           device_CO2_dashboard=grafana_api.dashboard.update_dashboard(device_CO2_dashboard_json)
         
