@@ -7,20 +7,20 @@ exec 2>&1
 #AWS variables
 #-------------
 # - AWS credentials
-export AWS_ACCESS_KEY_ID=
-export AWS_SECRET_ACCESS_KEY=
-export AWS_DEFAULT_REGION=
+export AWS_ACCESS_KEY_ID="your_aws_access_key_id"
+export AWS_SECRET_ACCESS_KEY="your_aws_secret_access_key"
+export AWS_DEFAULT_REGION="your_default_region"
 # - AWS volume id used to provide persistence
-export vol_id=
+export vol_id=vol-XXXXX
 # - AWS elastict IP used to ensure new machines in the scaling group have always the same IP
-export eip_id=
+export eip_id=eipalloc-XXXXXX
 
 #Stack Variables
 #---------------
 # - Grafana NodePort
 export PUBLIC_IP=$(aws ec2 describe-addresses --allocation-ids $eip_id --query 'Addresses[0].PublicIp'|tr -d '"')
 export GRAFANA_NODEPORT_PORT=30300
-export GRAFANA_ADMIN_PASSWORD="your_password_here"
+export GRAFANA_ADMIN_PASSWORD="your_password"
 #===========================================================
 
 
@@ -61,7 +61,7 @@ kubectl --kubeconfig /home/ubuntu/.kube/config apply -f https://raw.githubuserco
 
 #================Install anaire cloud stack=================
 for manifest in mqtt_broker mqttforward pushgateway prometheus grafana grafana-image-renderer; do
-  wget https://raw.githubusercontent.com/anaireorg/anaire-cloud/main/stack/${manifest}.yaml
+  wget -P /home/ubuntu https://raw.githubusercontent.com/anaireorg/anaire-cloud/main/stack/${manifest}.yaml
 done
 
 #Lauch pushgateway
@@ -73,7 +73,7 @@ export PUSHGATEWAY_CIP=$(kubectl --kubeconfig /home/ubuntu/.kube/config get svc 
 while [ -z $PUSHGATEWAY_CIP ]; do export PUSHGATEWAY_CIP=$(kubectl --kubeconfig /home/ubuntu/.kube/config get svc pushgateway-np -o jsonpath='{.spec.clusterIP}{":"}{.spec.ports[0].targetPort}'); sleep 1; done
 
 #launch prometheus including $PUSHGATEWAY_CIP as target
-( echo "cat <<EOF" ; cat prometheus.yaml ; echo EOF ) | sh | kubectl apply -f -
+( echo "cat <<EOF" ; cat /home/ubuntu/prometheus.yaml ; echo EOF ) | sh | kubectl --kubeconfig /home/ubuntu/.kube/config apply -f -
 sleep 2
 
 #Launch grafana image renderer
@@ -89,7 +89,7 @@ export RENDERER_CIP=$(kubectl --kubeconfig /home/ubuntu/.kube/config get svc gra
 while [ -z $RENDERER_CIP ]; do export RENDERER_CIP=$(kubectl --kubeconfig /home/ubuntu/.kube/config get svc grafana-image-renderer-cip -o jsonpath='{.spec.clusterIP}{":"}{.spec.ports[0].targetPort}'); sleep 1; done
 
 #launch grafana including $PROMETHEUS_CIP as target, setting GF_SERVER_ROOT_URL, GF_SECURITY_ADMIN_PASSWORD and the rendering variables
-( echo "cat <<EOF" ; cat grafana.yaml ; echo EOF ) | sh | kubectl apply -f -
+( echo "cat <<EOF" ; cat /home/ubuntu/grafana.yaml ; echo EOF ) | sh | kubectl --kubeconfig /home/ubuntu/.kube/config apply -f -
 sleep 2
 
 #Lauch MQTT broker

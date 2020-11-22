@@ -7,13 +7,13 @@ exec 2>&1
 #AWS variables
 #-------------
 # - AWS credentials
-export AWS_ACCESS_KEY_ID=
-export AWS_SECRET_ACCESS_KEY=
-export AWS_DEFAULT_REGION=
+export AWS_ACCESS_KEY_ID="your_aws_access_key_id"
+export AWS_SECRET_ACCESS_KEY="your_aws_secret_access_key"
+export AWS_DEFAULT_REGION="your_default_region"
 # - AWS volume id used to provide persistence
-export vol_id=
+export vol_id=vol-XXXXX
 # - AWS elastict IP used to ensure new machines in the scaling group have always the same IP
-export eip_id=
+export eip_id=eipalloc-XXXXXX
 #===========================================================
 
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
