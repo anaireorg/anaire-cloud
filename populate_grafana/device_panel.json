@@ -30,7 +30,7 @@
       ],
       "fields": ""
     },
-    "showThresholdLabels": false,
+    "showThresholdLabels": true,
     "showThresholdMarkers": true
   },
   "fieldConfig": {
