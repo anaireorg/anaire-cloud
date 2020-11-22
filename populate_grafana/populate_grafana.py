@@ -165,7 +165,7 @@ def main():
         print("Creating user "+user['login']+"...")
         user['password']=get_user_password(user['login'],info=user)
         createUser(user)
-        content = update_user_preferences(user['login'],{'theme': 'light'})
+        #content = update_user_preferences(user['login'],{'theme': 'light'})
       
       #Add all users listed as vierwer to the 'general_viewer' team 
       if ("viewer" in config):
@@ -362,7 +362,7 @@ def main():
               print("      Adding user \'"+user+"\' to \'"+dir_name+"_"+dev_name+"_viewer\' team...")
               teams[dir_name+"_"+dev_name+'_viewer'].append(user)
               addUserToTeam(user,dir_name+"_"+dev_name+'_viewer')
-              update_user_preferences(user,{'theme': 'light','homeDashboardId': device_CO2_dashboard['id']})
+              update_user_preferences(user,{'homeDashboardId': device_CO2_dashboard['id']})
               
           #Add all users listed as editor to the device viewer team
           if ("editor" in device):
