@@ -17,9 +17,15 @@ spec:
           image: grafana/grafana
           env:
           - name: GF_SECURITY_ADMIN_PASSWORD
-            value: "grafananotcomplextestpassword"
+            value: "${GRAFANA_ADMIN_PASSWORD}"
           - name: GF_SERVER_ROOT_URL
-            value: "http://<IP>:<port>"
+            value: "http://${PUBLIC_IP}:${GRAFANA_NODEPORT_PORT}"
+          - name: GF_RENDERING_SERVER_URL
+            value: "http://${RENDERER_CIP}/render"
+          - name: GF_RENDERING_CALLBACK_URL
+            value: "http://${PUBLIC_IP}:${GRAFANA_NODEPORT_PORT}/"
+          - name: GF_LOG_FILTERS
+            value: rendering:debug
           args:
           volumeMounts:
             - name: grafana-storage-volume
@@ -50,7 +56,7 @@ data:
       - name: Prometheus
         type: prometheus
         access: proxy
-        url: http://<IP>:<port>
+        url: http://${PROMETHEUS_CIP}
         version: 1
         editable: true
         isDefault: true
@@ -66,4 +72,4 @@ spec:
   ports:
   - protocol: TCP
     port: 3000
-    nodePort: 30300
+    nodePort: ${GRAFANA_NODEPORT_PORT}

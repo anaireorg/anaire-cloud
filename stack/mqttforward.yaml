@@ -15,8 +15,6 @@ spec:
       containers:
         - name: mqttforward
           image: python
-          #command: ["sleep"]
-          #args: ["infinity"]
           command: ["/bin/bash"]
           args: ["-c","/config/run.sh"]
           volumeMounts:

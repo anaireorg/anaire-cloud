@@ -15,8 +15,6 @@ spec:
       containers:
         - name: mqttbroker
           image: eclipse-mosquitto
-          #command: ["/bin/pushgateway"]
-          #args: ["--persistence.file=/pushgateway/pushwateway.data","--persistence.interval=10s"]
           volumeMounts:
             - name: mqtt-storage-volume
               mountPath: /mosquitto/
