@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mqttbroker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mqttbroker
+  template:
+    metadata:
+      labels:
+        app: mqttbroker
+    spec:
+      containers:
+        - name: mqttbroker
+          image: eclipse-mosquitto
+          #command: ["/bin/pushgateway"]
+          #args: ["--persistence.file=/pushgateway/pushwateway.data","--persistence.interval=10s"]
+          volumeMounts:
+            - name: mqtt-storage-volume
+              mountPath: /mosquitto/
+            - name: mqtt-config
+              mountPath: /mosquitto/config/mosquitto.conf
+              subPath: mosquitto.conf
+      volumes:
+        - name: mqtt-storage-volume
+          hostPath:
+            path: /data/mosquitto
+            type: Directory
+        - name: mqtt-config
+          configMap:
+            name: mqttbroker-config
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: mqttbroker-config
+data:
+  datasource.yaml: |
+    persistence true
+    persistence_location /mosquitto/data/
+    log_dest file /mosquitto/log/mosquitto.log
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mqtt-np
+spec:
+  type: NodePort
+  selector:
+    app: mqttbroker
+  ports:
+  - protocol: TCP
+    port: 1883
+    nodePort: 30183

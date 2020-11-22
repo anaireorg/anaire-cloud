@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pushgateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pushgateway
+  template:
+    metadata:
+      labels:
+        app: pushgateway
+    spec:
+      containers:
+        - name: pushgateway
+          image: prom/pushgateway
+          command: ["/bin/pushgateway"]
+          args: ["--persistence.file=/pushgateway/pushwateway.data","--persistence.interval=10s"]
+          volumeMounts:
+            - name: pushgateway-storage-volume
+              mountPath: /pushgateway/
+      volumes:
+        - name: pushgateway-storage-volume
+          hostPath:
+            path: /data/pushgateway
+            type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pushgateway-np
+spec:
+  type: NodePort
+  selector:
+    app: pushgateway
+  ports:
+  - protocol: TCP
+    port: 9091
+    nodePort: 30991
