@@ -17,6 +17,7 @@ dashboard_config = yaml.safe_load(file.read())
 file.close()
 GRAFANA_URL=sys.argv[1]
 password=sys.argv[2]
+users_passwords={}
 config_file=sys.argv[3]
 username = dashboard_config['username']
 language = dashboard_config['language']
@@ -57,8 +58,14 @@ def put(URL,DATA,HEADERS):
   except requests.exceptions.RequestException as e:  # This is the correct syntax
     raise SystemExit(e)
 
-def get_user_password(login):
-  return strToBase64(login);
+def get_user_password(login, info=None):
+  if info: 
+    password = info.get('password',strToBase64(login));
+    users_passwords[login] = password; 
+  else: 
+    password = users_passwords[login]
+  
+  return password;
   
 def update_user_preferences(login, update):
   URL  = 'http://'+GRAFANA_URL+'/api/user/preferences'
@@ -156,7 +163,7 @@ def main():
       #Iterate trough users creating them
       for user in users:
         print("Creating user "+user['login']+"...")
-        user['password']=get_user_password(user['login'])
+        user['password']=get_user_password(user['login'],info=user)
         createUser(user)
         content = update_user_preferences(user['login'],{'theme': 'light'})
       
