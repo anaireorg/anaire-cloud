@@ -307,7 +307,7 @@ def main():
           device_panel_json['links'][0]['url'] = device_panel_url
           device_panel_json['links'][0]['targetBlank'] = True
           device_panel_json['fieldConfig']['defaults']['links'] = list()
-          device_panel_json['fieldConfig']['defaults']['links'][0] = dict()
+          device_panel_json['fieldConfig']['defaults']['links'].append(dict())
           device_panel_json['fieldConfig']['defaults']['links'][0]['title'] = dashboard_config['messages'][language]['overview_dashboard']['link']+dev_name
           device_panel_json['fieldConfig']['defaults']['links'][0]['url'] = device_panel_url
           device_panel_json['fieldConfig']['defaults']['links'][0]['targetBlank'] = True
