@@ -67,16 +67,16 @@ data:
     def on_message(client, userdata, msg):
         payload = msg.payload.decode("utf-8")
         payload = yaml.safe_load(msg.payload.decode("utf-8"))
+
         device_id = payload.pop('id', None)
-        co2 = payload.pop('CO2', None)
-        temperature = payload.pop('temperature', None)
-        humidity = payload.pop('humidity', None)
-        msg = ""
-        if co2: msg = msg+'CO2 '+str(co2)+'\n'
-        if temperature: msg = msg+'Temperature '+str(temperature)+'\n'
-        if humidity: msg = msg+'Humidity '+str(humidity)+'\n'
-        URL  = 'http://'+sys.argv[1]+':9091/metrics/job/'+device_id
-        pushdata(msg, URL)
+        if device_id:
+            msg = 'CO2 ' + str(payload.pop('CO2', 0)) + '\n' + \
+                  'Temperature ' + str(payload.pop('temperature', 0)) + '\n' + \
+                  'Humidity ' + str(payload.pop('humidity', 0)) + '\n'
+            URL  = 'http://' + sys.argv[1] + ':9091/metrics/job/' + device_id
+            pushdata(msg, URL)
+        else:
+            print( 'ERROR: Malformed message' + str(payload))
         
 
     def main():
