@@ -1,3 +1,24 @@
+# Anaire Cloud
+- [¿Qué background necesito para poner este proyecto en marcha?](#qu%C3%A9-background-necesito-para-poner-este-proyecto-en-marcha)
+- [Descripción de la solución Cloud](#descripci%C3%B3n-de-la-soluci%C3%B3n-cloud)
+- [Detalle de la solución cloud](#detalle-de-la-soluci%C3%B3n-cloud)
+    - [Componentes](#componentes)
+- [Instrucciones paso a Paso](#instrucciones-paso-a-paso)
+    - [Crear cuenta AWS y configuración básica](#crear-cuenta-aws-y-configuraci%C3%B3n-b%C3%A1sica)
+    - [Crear Volumen](#crear-volumen)
+    - [Crear Elastic IP](#crear-elastic-ip)
+    - [Crear Security Group](#crear-security-group)
+    - [Crear par de claves](#crear-par-de-claves)
+    - [Crear imagen base](#crear-imagen-base)
+    - [Crear template de VM](#crear-template-de-vm)
+    - [Crear Scaling Group](#crear-scaling-group)
+- [¿Por qué lo hacemos así?](#por-qu%C3%A9-lo-hacemos-as%C3%AD)
+    - [¿Cómo funciona el Scaling Group?](#c%C3%B3mo-funciona-el-scaling-group)
+    - [Alternativas](#alternativas)
+- [Instalación en cluster K8s genérico](#instalaci%C3%B3n-en-cluster-k8s-gen%C3%A9rico)
+- [Subvenciones Cloud](#subvenciones-cloud)
+- [¿Cómo revisar el consumo en AWS?](#c%C3%B3mo-revisar-el-consumo-en-aws)
+
 # ¿Qué background necesito para poner este proyecto en marcha?
 El objetivo es que seas capaz de desplegar esta solución sin tener conocimientos previos de aplicaciones en la nube, Kubernetes o programación.
 
@@ -18,11 +39,11 @@ Nosotros lo hemos orientado como la creación de una máquina virtual que contie
 # Detalle de la solución cloud
 ## Componentes
 En nuestra máquina virtual (o física) instalaremos un cluster Kubernetes (K8s). Dentro de este desplegaremos todos los componentes necesarios para nuestra solución. Estos son:
-**Grafana:** Es la interfaz gráfica en la que se pueden consultar los valores de CO2, temperatura y humedad de cada sensor. Obtiene los datoss consultando a Prometheus.
-**Prometheus:** Es el encargado de almacenar el histórico de todos los datos recibido por los sensores.
-**Pushgateway** Prometheus está pensado para consultar datos, no para que se los envíen. Ahí entra Pushgateway, quien es capaz de recibir los datos de los sensores y presentarlos de forma que Prometheus pueda consultarlos.
-**MQTT broker** Mosquitto (MQTT) es un servidor de mensajes ampliamente utilizado en el Internet de las Cosas (IoT). El broker es el servidor de mensajería en el que los dispositivos publicarán las mediciones en el topic 'measurement'. Esta manera de enviar los datos es muy ligera y tiene ventajas adicionales que planteamos incorporar al código en un futuro cercano.
-**MQTT forwarder** Se trata de un cliente Mosquitto que se subscribirá al broker para que se notifique cada vez que se reciban nuevas medidas. Este forwarder se encarga de mandar los datos a Pushgateway por HTTP, que es el protocolo que este entiende.
+* **Grafana:** Es la interfaz gráfica en la que se pueden consultar los valores de CO2, temperatura y humedad de cada sensor. Obtiene los datoss consultando a Prometheus.
+* **Prometheus:** Es el encargado de almacenar el histórico de todos los datos recibido por los sensores.
+* **Pushgateway:** Prometheus está pensado para consultar datos, no para que se los envíen. Ahí entra Pushgateway, quien es capaz de recibir los datos de los sensores y presentarlos de forma que Prometheus pueda consultarlos.
+* **MQTT broker:** Mosquitto (MQTT) es un servidor de mensajes ampliamente utilizado en el Internet de las Cosas (IoT). El broker es el servidor de mensajería en el que los dispositivos publicarán las mediciones en el topic 'measurement'. Esta manera de enviar los datos es muy ligera y tiene ventajas adicionales que planteamos incorporar al código en un futuro cercano.
+* **MQTT forwarder:** Se trata de un cliente Mosquitto que se subscribirá al broker para que se notifique cada vez que se reciban nuevas medidas. Este forwarder se encarga de mandar los datos a Pushgateway por HTTP, que es el protocolo que este entiende.
 ![Componentes Anaire Cloud](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/componentes.jpg)
 # Instrucciones paso a Paso
 Para entender por qué hemos elegido instalar nuestra solución de esta forma por favor consulta la sección [¿Por qué lo hacemos así?](#por-qué-lo-hacemos-así)
@@ -58,11 +79,11 @@ Deberías ver una ventana de confirmación con este aspecto. Descarga el archivo
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/crear_usuario_3.jpg)
 
 En el archivo descargado deberías tener los campos "User name,Password,Access key ID,Secret access key,Console login link"
-***User name:*** Nombre del usario IAM
-***Password:*** Contraseña asignada al usuario IAM
-***Access key ID:*** ID que se debe utilizar en el script para permitir al mismo crear recursos en AWS.
-***Secret access key:*** Contraseña que se debe usar junto al 'Access key ID' en el script para permitir al mismo crear recursos en AWS
-***Console login link:*** Enlace directo para hacer login. El ID de 12 dígitos con el que comienza es el ID de cuenta.
+* **User name:** Nombre del usario IAM
+* **Password:** Contraseña asignada al usuario IAM
+* **Access key ID:** ID que se debe utilizar en el script para permitir al mismo crear recursos en AWS.
+* **Secret access key:** Contraseña que se debe usar junto al 'Access key ID' en el script para permitir al mismo crear recursos en AWS
+* **Console login link:** Enlace directo para hacer login. El ID de 12 dígitos con el que comienza es el ID de cuenta.
 
 A partir de ahora este será el usuario que utilicemos para crear los recursos y no el usuario raíz.
 
@@ -109,8 +130,10 @@ El siguiente paso es crear temporalmente una máquina virtual que usaremos para 
 2. Pulsa el botón en la parte superior derecha 'Lanzar instancias'
 3. Select 'Minimal Ubuntu 18.04 LTS - Bionic' form 'AWS Marketplace'
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_1.jpg)
+
 4. Selecciona 'Continue'
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_2.jpg)
+
 5. Selecciona 't3a.small' y pulsa 'Next: Configure Instance Details'
 
 **OJO: Instrucciones incompletas:** Hay que asegurarse de que se elige la subnet correspondiente a la Availability Zone en la que se creó el volumen. La máquina virtual y el volumen deben pertenecer a la misma Availability Zone.
@@ -121,28 +144,47 @@ En esta caja tienes que copiar el contenido del [script para configurar la VM de
 **OJO** Tienes que editar las variables en la sección AWS credentials con los datos de tu access key and secret, tu región (si seleccionaste Irlanda es eu-west-1) el id del volumen que has creado y el id de la IP elástica que has creado.
 
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_4.jpg)
+
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_5.jpg)
-7. Selecciona 'Review and Launch'
-8. Selecciona 'Launch'
-9. Una ventana aparecerá para seleccionar el par de claves que creamos anteriormente. Marca 'Choose an existing key pair' y seleccionalo en la segunda caja. Marca el checkbox y pulsa 'Launch Instances'
+
+7. Selecciona 'Review and Launch'.
+
+8. Selecciona 'Launch'.
+
+9. Una ventana aparecerá para seleccionar el par de claves que creamos anteriormente. Marca 'Choose an existing key pair' y seleccionalo en la segunda caja. Marca el checkbox y pulsa 'Launch Instances'.
+
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_3.jpg)
+
 10. Deberías obtener una imagen de confirmación como la siguiente
+
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_6.jpg)
+
 11. Pulsa el botón 'View instances' para ir a ver tu instancia en el panel de instancias. Después de un rato debería tener este aspecto. Si no lo tiene pulsa el símbolo para actualizar.
+
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_7.jpg)
+
 12. Espera hasta que el script que hemos copiado en el 'user data' complete su ejecución. Esto lo podríamos hacer haciendo ssh a la máquina con la clave privada que hemos descargado y comprobando el contenido de /home/ubuntu/userdata.txt, pero podemos simplemente esperar unos 10 minutos para estar seguros y proceder.
-13. Selecciona la instancia, pulsa en 'Acciones', 'Image and templates' y 'Crear imagen'
+
+13. Selecciona la instancia, pulsa en 'Acciones', 'Image and templates' y 'Crear imagen'.
+
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_8.jpg)
+
 14. Selecciona un nombre y asegúrate de quitar el dispositivo /dev/sdb (de 5GB), sólo queremos hacer el snapshot del disco de 8GB. Si no te apareciese el disco de 5GB es que el script de User Data no se ha ejecutado correctamente, puede ser un problema con las variables o por haber esperado poco tiempo a que se aplicase.
+
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_9.jpg)
-15. Pulsa 'Crear Imagen'
-16. Cuando la creación acabe vuelve a instancias
+
+15. Pulsa 'Crear Imagen'.
+
+16. Cuando la creación acabe vuelve a instancias.
+
 17. Selecciona la instancia, y pulsa 'Terminar instancia' en el desplegable 'Estado de instancia'.
 
+![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_10.jpg)
+
 En este punto tenemos:
-- Un volumen preparado para almacenar los datos de nuestras aplicaciones
-- Una IP elástica, que será la IP que usarán tanto nuestros dispositivos para enviar los datos como nosotros para acceder a la interfaz gráfica.
-- Una imagen de VM con todos los paquetes que necesitamos para poder correr nuestra aplicación. 
+* Un volumen preparado para almacenar los datos de nuestras aplicaciones
+* Una IP elástica, que será la IP que usarán tanto nuestros dispositivos para enviar los datos como nosotros para acceder a la interfaz gráfica.
+* Una imagen de VM con todos los paquetes que necesitamos para poder correr nuestra aplicación. 
 
 ## Crear template de VM
 1. En el menú laterar de EC2, ve a 'Plantillas de lanzamiento' dentro de la sección 'Instancias'.
@@ -168,7 +210,16 @@ Ahora crearemos un scaling group que contendrá una sola VM. Este se basará en 
 6. Pulsa el botón 'Crear grupo de Auto Scaling'
 
 # ¿Por qué lo hacemos así?
-## Ventajas
+AWS, al igual que el resto de hyperscalers tienen servicios de Kubernetes gestionados que ofrecen alta disponibilidad y te ocultan la complejidad de la gestión del cluster. Pese a ello, la aproximación seguida aquí tiene ventajas:
+* Ejecutar en un hyperscaler (AWS en este caso) permite 
+    * Tener acceso a los datos a través de Internet desde cualquier ubicación.
+    * Reduce la probabilidad de que falle la VM
+    * Posibilidad de uso de Scaling Group, maximizando la resiliencia de la solución
+* Ejecutar en una VM autocontenida permite
+    * Minimizar el coste
+    * Poder migrar la solución fácilmente a otra plataforma
+    * Ampliar el setup incluyendo una segunda VM autocontenida que sean copia una de otra sería relativamente sencillo haciendo que los broker MQTT funcionasen como cluster.
+
 ## ¿Cómo funciona el Scaling Group?
 Básicamente el scaling group lo que hace es monitorizar en número de instancias que tienes en el grupo y asegurarse de que siempre se esté en el número deseado de instancias.
 
@@ -179,6 +230,21 @@ En nuestra experiencia el tiempo que tarda la nueva máquina virtual en estar ac
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/scaling_group.jpg)
 
 ## Alternativas
+Realmente la aplicación no tiene requisitos especiales, sólo necesita un cluster Kubernetes y crear el directorio /data, que es donde se almacenan los datos persistentes.
+Podría utilizarse hospedaje para la VM en cualquier otro hyperscaler, usar un servicio de Kubernetes gestionado o instalar el cluster Kubernetes en un equipo físico dentro del centro (colegio) a monitorizar.
+
 # Instalación en cluster K8s genérico
+Los ficheros yaml para lanzar la aplicación están en [el directorio stack de Github](https://github.com/anaireorg/anaire-cloud/tree/main/stack).
+Es importante tener en cuenta que hay dependencias. El orden correcto de despliegue es:
+1. **Pushgateway**
+2. **Prometheus**. Para desplegarlo es necesario sustituir la variable del ClusterIP de Pushgateway en el manifest.
+3. **Grafana**. Para desplegarlo es necesario sustituir la variable del ClusterIP de Prometheus en el manifest.
+4. **MQTT Broker**
+5. **MQTT Forwarder**
 # Subvenciones Cloud
-# Cómo revisar el consumo en AWS 
+Comprueba si gracias a alguno de estos programas podrías obtener créditos para correr la aplicación de forma gratuita.
+* [Open data sponsorship program](https://aws.amazon.com/es/opendata/open-data-sponsorship-program/)
+* [AWS Educate](https://aws.amazon.com/es/education/awseducate/)
+# Cómo revisar el consumo en AWS
+Accede a la sección de Billing para tener acceso al consumo actual y a una predicción del consumo esperado a fin de mes. 
+Por defecto los usuarios administradores no tienen acceso completo al billing. Puedes conceder estos permisos siguiendo la documentación de AWS o usar el usuario raiz para realizar estas consultas.
