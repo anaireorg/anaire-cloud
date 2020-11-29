@@ -116,6 +116,7 @@ El siguiente paso es crear temporalmente una máquina virtual que usaremos para 
 En esta caja tienes que copiar el contenido del [script para configurar la VM de nuestro repositorio Github](https://github.com/anaireorg/anaire-cloud/blob/main/stack/user_data_new_vm.sh)
 
 ***OJO*** Tienes que editar las variables en la sección AWS credentials con los datos de tu access key and secret, tu región (si seleccionaste Irlanda es eu-west-1) el id del volumen que has creado y el id de la IP elástica que has creado.
+
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_4.jpg)
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_5.jpg)
 6. Selecciona 'Review and Launch'
@@ -152,4 +153,3 @@ En este punto tenemos:
 # Instalación en cluster K8s genérico
 # Subvenciones Cloud
 # Cómo revisar el consumo en AWS 
-
