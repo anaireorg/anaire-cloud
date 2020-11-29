@@ -6,7 +6,7 @@ El objetivo es que seas capaz de desplegar esta solución sin tener conocimiento
 
 Te recomendamos que leas este README al completo y que lleves a cabo los pasos enumerados en sección [Instrucciones Paso a Paso](#instrucciones-paso-a-paso).
 
-**Importante** Si vas a utilizar Amazon Web Services consulta la sección de [subvenciones cloud](#subvenciones-cloud) por si pudieses beneficiarte de créditos para hospedar de forma gratuita la solución.
+**IMPORTANTE** Si vas a utilizar Amazon Web Services consulta la sección de [subvenciones cloud](#subvenciones-cloud) por si pudieses beneficiarte de créditos para hospedar de forma gratuita la solución.
 
 Si tienes experiencia con Kubernetes puedes atreverte con [algunas alternativas](#alternativas) desplegando sobre otra plataforma de tu elección o incluso sobre tu propia máquina física.
 
@@ -27,11 +27,11 @@ En nuestra máquina virtual (o física) instalaremos un cluster Kubernetes (K8s)
 # Instrucciones paso a Paso
 Para entender por qué hemos elegido instalar nuestra solución de esta forma por favor consulta la sección [¿Por qué lo hacemos así?](#por-qué-lo-hacemos-así)
 
-***IMPORTANTE:*** En los pasos siguientes se va a crear una cuenta en Amazon Web Services y desplegar recursos sobre esta. Desplegar recursos tiene un coste asociado que se factura mensualmente. Estas instrucciones están pensadas para desplegar la solución con un coste mínimo, pero es IMPRESCINDIBLE mantener una monitorización de cuánto consumo se está haciendo para no llevarnos un susto con la factura a fin de mes. Estas instrucciones no garantizan el importe de la factura.
+**IMPORTANTE:** En los pasos siguientes se va a crear una cuenta en Amazon Web Services y desplegar recursos sobre esta. Desplegar recursos tiene un coste asociado que se factura mensualmente. Estas instrucciones están pensadas para desplegar la solución con un coste mínimo, pero es IMPRESCINDIBLE mantener una monitorización de cuánto consumo se está haciendo para no llevarnos un susto con la factura a fin de mes. Estas instrucciones no garantizan el importe de la factura.
 
-***IMPORTANTE*** Asegurate de mantener tus credenciales de la cuenta AWS en lugar seguro y de impedir que nadie tenga acceso a tu VM. Si alguien tiene acceso a tus credenciales podría desplegar recursos incrementando tu factura.
+**IMPORTANTE** Asegurate de mantener tus credenciales de la cuenta AWS en lugar seguro y de impedir que nadie tenga acceso a tu VM. Si alguien tiene acceso a tus credenciales podría desplegar recursos incrementando tu factura.
 
-***IMPORTANTE*** Intentamos crear unas instrucciones todo lo detalladas que podemos y estaremos encantados de intentarte ayudar a arrancar tu copia de este software, pero no podemos hacernos responsables del consumo ni de la seguridad de tu cuenta en Amazon Web Services ni en ningún otro proveedor cloud. En caso de no estar seguro de ser capaz de poder controlar estos aspectos por tí mismo pide ayuda a alguien con experiencia de despliegues cloud.
+**IMPORTANTE** Intentamos crear unas instrucciones todo lo detalladas que podemos y estaremos encantados de intentarte ayudar a arrancar tu copia de este software, pero no podemos hacernos responsables del consumo ni de la seguridad de tu cuenta en Amazon Web Services ni en ningún otro proveedor cloud. En caso de no estar seguro de ser capaz de poder controlar estos aspectos por tí mismo pide ayuda a alguien con experiencia de despliegues cloud.
 
 ## Crear cuenta AWS y configuración básica
 [Crea una nueva cuenta](https://portal.aws.amazon.com/billing/signup#/start)
@@ -109,32 +109,35 @@ El siguiente paso es crear temporalmente una máquina virtual que usaremos para 
 2. Pulsa el botón en la parte superior derecha 'Lanzar instancias'
 3. Select 'Minimal Ubuntu 18.04 LTS - Bionic' form 'AWS Marketplace'
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_1.jpg)
-4 Selecciona 'Continue'
+4. Selecciona 'Continue'
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_2.jpg)
 5. Selecciona 't3a.small' y pulsa 'Next: Configure Instance Details'
+
+**OJO: Instrucciones incompletas:** Hay que asegurarse de que se elige la subnet correspondiente a la Availability Zone en la que se creó el volumen. La máquina virtual y el volumen deben pertenecer a la misma Availability Zone.
+
 6. Desplazate hasta la caja 'User data' dentro de la sección 'Advanced Details'.
 En esta caja tienes que copiar el contenido del [script para configurar la VM de nuestro repositorio Github](https://github.com/anaireorg/anaire-cloud/blob/main/stack/user_data_new_vm.sh)
 
-***OJO*** Tienes que editar las variables en la sección AWS credentials con los datos de tu access key and secret, tu región (si seleccionaste Irlanda es eu-west-1) el id del volumen que has creado y el id de la IP elástica que has creado.
+**OJO** Tienes que editar las variables en la sección AWS credentials con los datos de tu access key and secret, tu región (si seleccionaste Irlanda es eu-west-1) el id del volumen que has creado y el id de la IP elástica que has creado.
 
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_4.jpg)
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_5.jpg)
-6. Selecciona 'Review and Launch'
-7. Selecciona 'Launch'
-8. Una ventana aparecerá para seleccionar el par de claves que creamos anteriormente. Marca 'Choose an existing key pair' y seleccionalo en la segunda caja. Marca el checkbox y pulsa 'Launch Instances'
+7. Selecciona 'Review and Launch'
+8. Selecciona 'Launch'
+9. Una ventana aparecerá para seleccionar el par de claves que creamos anteriormente. Marca 'Choose an existing key pair' y seleccionalo en la segunda caja. Marca el checkbox y pulsa 'Launch Instances'
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_3.jpg)
-9 Deberías obtener una imagen de confirmación como la siguiente
+10. Deberías obtener una imagen de confirmación como la siguiente
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_6.jpg)
-10. Pulsa el botón 'View instances' para ir a ver tu instancia en el panel de instancias. Después de un rato debería tener este aspecto. Si no lo tiene pulsa el símbolo para actualizar.
+11. Pulsa el botón 'View instances' para ir a ver tu instancia en el panel de instancias. Después de un rato debería tener este aspecto. Si no lo tiene pulsa el símbolo para actualizar.
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_7.jpg)
-11. Espera hasta que el script que hemos copiado en el 'user data' complete su ejecución. Esto lo podríamos hacer haciendo ssh a la máquina con la clave privada que hemos descargado y comprobando el contenido de /home/ubuntu/userdata.txt, pero podemos simplemente esperar unos 10 minutos para estar seguros y proceder.
-12. Selecciona la instancia, pulsa en 'Acciones', 'Image and templates' y 'Crear imagen'
+12. Espera hasta que el script que hemos copiado en el 'user data' complete su ejecución. Esto lo podríamos hacer haciendo ssh a la máquina con la clave privada que hemos descargado y comprobando el contenido de /home/ubuntu/userdata.txt, pero podemos simplemente esperar unos 10 minutos para estar seguros y proceder.
+13. Selecciona la instancia, pulsa en 'Acciones', 'Image and templates' y 'Crear imagen'
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_8.jpg)
-13. Selecciona un nombre y asegúrate de quitar el dispositivo /dev/sdb (de 5GB), sólo queremos hacer el snapshot del disco de 8GB. Si no te apareciese el disco de 5GB es que el script de User Data no se ha ejecutado correctamente, puede ser un problema con las variables o por haber esperado poco tiempo a que se aplicase.
+14. Selecciona un nombre y asegúrate de quitar el dispositivo /dev/sdb (de 5GB), sólo queremos hacer el snapshot del disco de 8GB. Si no te apareciese el disco de 5GB es que el script de User Data no se ha ejecutado correctamente, puede ser un problema con las variables o por haber esperado poco tiempo a que se aplicase.
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/image_9.jpg)
-14. Pulsa 'Crear Imagen'
-15. Cuando la creación acabe vuelve a instancias
-16. Selecciona la instancia, y pulsa 'Terminar instancia' en el desplegable 'Estado de instancia'.
+15. Pulsa 'Crear Imagen'
+16. Cuando la creación acabe vuelve a instancias
+17. Selecciona la instancia, y pulsa 'Terminar instancia' en el desplegable 'Estado de instancia'.
 
 En este punto tenemos:
 - Un volumen preparado para almacenar los datos de nuestras aplicaciones
@@ -142,13 +145,39 @@ En este punto tenemos:
 - Una imagen de VM con todos los paquetes que necesitamos para poder correr nuestra aplicación. 
 
 ## Crear template de VM
+1. En el menú laterar de EC2, ve a 'Plantillas de lanzamiento' dentro de la sección 'Instancias'.
+2. Pulsa el botón 'Crear plantilla de lanzamiento'.
+3. Da un nombre a la plantilla.
+4. Selecciona como 'Imagen de Amazon Machine (AMI)' la imagen que creamos anteriormente
+5. Selecciona t3a.small como 'Tipo de instancia'
+6. Selecciona el par de claves que creamos anteriormente
+7. Abre el desplegable 'Detalles avanzados'
+8. Desplázate hasta el final de la página donde se encuentra la caja 'Datos de usuario'
+En esta caja tienes que copiar el contenido del [script para configurar scaling group de nuestro repositorio Github](https://github.com/anaireorg/anaire-cloud/blob/main/stack/user_data_scaling_group.sh)
+
+**OJO** Tienes que editar las variables en la sección AWS credentials con los datos de tu access key and secret, tu región (si seleccionaste Irlanda es eu-west-1) el id del volumen que has creado y el id de la IP elástica que has creado.
 
 ## Crear Scaling Group
+Ahora crearemos un scaling group que contendrá una sola VM. Este se basará en el template que acabamos de crear y que se encarga de cada vez que la vm se arranque enlazarla con el volumen, con la IP elástica y volver a arrancar las aplicaciones.
+
+1. En el menú laterar de EC2, ve a 'Grupos de Auto Scaling' dentro de la sección 'Auto Scaling'.
+2. Pulsa el botón Crear grupo de Auto Scaling
+3. Elige nombre y selecciona la plantilla que hemos creado. Pulsa siguiente.
+4. En la sección 'Red', en el apartado 'Subredes' selecciona únicamente la subred correspondiente a la Availability Zone en la que creaste el volumen anteriormente.
+5. Pulsa siguiente dejando los parámetros por defecto hasta que llegues a la pantalla 'Revisar'.
+6. Pulsa el botón 'Crear grupo de Auto Scaling'
 
 # ¿Por qué lo hacemos así?
 ## Ventajas
 ## ¿Cómo funciona el Scaling Group?
+Básicamente el scaling group lo que hace es monitorizar en número de instancias que tienes en el grupo y asegurarse de que siempre se esté en el número deseado de instancias.
+
+En nuestro caso el número deseado es 1, y en el template hemos hecho que esa instancia esté ligada a nuestro volumen y a nuestra elastic IP. Esto consigue que si la VM es terminada, ya sea porque por error la borramos o porque hay un fallo catastrófico en AWS que provoca que la VM muera, otra VM la reemplazaría, pero con la misma IP y con los mismos datos almacenados, por lo que a todos los efectos sería como si no hubiese fallado.
+
+En nuestra experiencia el tiempo que tarda la nueva máquina virtual en estar accesible prestando servicio es entre 5 y 10 minutos desde que se borra la VM original.
+
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/scaling_group.jpg)
+
 ## Alternativas
 # Instalación en cluster K8s genérico
 # Subvenciones Cloud
