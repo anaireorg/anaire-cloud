@@ -25,11 +25,82 @@ En nuestra máquina virtual (o física) instalaremos un cluster Kubernetes (K8s)
 **MQTT forwarder** Se trata de un cliente Mosquitto que se subscribirá al broker para que se notifique cada vez que se reciban nuevas medidas. Este forwarder se encarga de mandar los datos a Pushgateway por HTTP, que es el protocolo que este entiende.
 ![Componentes Anaire Cloud](https://pbs.twimg.com/media/En763rJXIAAGLH6?format=jpg&name=small)
 # Instrucciones paso a Paso
-Para entender por qué hemos elegido instalar nuestra solución de esta forma por favor consulta la sección [¿Por qué lo hacemos así?](-#por-que-lo-hacemos-asi-)
+Para entender por qué hemos elegido instalar nuestra solución de esta forma por favor consulta la sección [¿Por qué lo hacemos así?](#por-qué-lo-hacemos-así)
+
+***IMPORTANTE:*** En los pasos siguientes se va a crear una cuenta en Amazon Web Services y desplegar recursos sobre esta. Desplegar recursos tiene un coste asociado que se factura mensualmente. Estas instrucciones están pensadas para desplegar la solución con un coste mínimo, pero es IMPRESCINDIBLE mantener una monitorización de cuánto consumo se está haciendo para no llevarnos un susto con la factura a fin de mes. Estas instrucciones no garantizan el importe de la factura.
+
+***IMPORTANTE*** Asegurate de mantener tus credenciales de la cuenta AWS en lugar seguro y de impedir que nadie tenga acceso a tu VM. Si alguien tiene acceso a tus credenciales podría desplegar recursos incrementando tu factura.
+
 ## Crear cuenta AWS y configuración básica
+[Crea una nueva cuenta](https://portal.aws.amazon.com/billing/signup#/start)
+Rellena la información de contacto solicitada y la información de pago.
+
+Esto te proporcionará un usuario raiz. Es una mala práctica usar el usuario raiz para crear recursos. En su lugar crearemos un usuario IAM.
+1. [Inicia sesión en la consola](https://console.aws.amazon.com/console/home?nc2=h_ct&src=header-signin) como usuario raíz con los datos que acabas de obtener
+2. En la barra de búsqueda de servicios busca IAM y accede a este servicio.
+3. En el menú de la izquierda pulsa sobre 'Usuarios'
+4. Pulsa el botón 'Añadir usuario(s)'
+5. Selecciona nombre de usuario y marca las opciones 'Acceso mediante programación' y 'Acceso a la consola de administración de AWS'
+El 'Acceso mediante programación' proporionará las credenciales para que más tarde seamos capaces de gestionar nuestra cuenta mediante un script.
+el 'Acceso a la consola de administración de AWS' nos proporcionará un usuario y contraseña que usar en lugar del usuario raiz.
+Si lo deseas puedes elegir qué contraseña quieres y si en el próximo login será necesario cambiarla
+![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/crear_usuario_1.jpg)
+Y pulsa 'Siguiente'
+6. Selecciona el grupo 'admin' para proporcionar acceso a todos los recursos
+![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/crear_usuario_2.jpg)
+Y pulsa 'Siguiente'
+7. Añade alguna etiqueta si lo deseas y pulsa 'siguiente'
+8. Revisa la información y pulsa 'Crear un usuario'
+
+Deberías ver una ventana de confirmación con este aspecto. Descarga el archivo CSV y asegurate de dejarlo almacenado en un sitio seguro. El usuario creado tiene permisos de administrador y por tanto puede crer todos los recursos que quiera, lo que podría suponer una factura considerable.
+![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/crear_usuario_3.jpg)
+
+En el archivo descargado deberías tener los campos "User name,Password,Access key ID,Secret access key,Console login link"
+***User name:*** Nombre del usario IAM
+***Password:*** Contraseña asignada al usuario IAM
+***Access key ID:*** ID que se debe utilizar en el script para permitir al mismo crear recursos en AWS.
+***Secret access key:*** Contraseña que se debe usar junto al 'Access key ID' en el script para permitir al mismo crear recursos en AWS
+***Console login link:*** Enlace directo para hacer login. El ID de 12 dígitos con el que comienza es el ID de cuenta.
+
+A partir de ahora este será el usuario que utilicemos para crear los recursos y no el usuario raíz.
+
 ## Crear Volumen
+1. [Inicia sesión en la consola](https://console.aws.amazon.com/console/home?nc2=h_ct&src=header-signin) con ID de cuenta y tu usuario IAM creado en [la sección anterior](#crear-cuenta-aws-y-configuración-básica)
+2. En la parte superior derecha se puede seleccionar dónde se quieren crear los recursos. Irlanda es la zona en Europa donde más barato resulta desplegar recursos, te recomendamos esta opción.
+![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/volumen_1.jpg)
+3. En buscar servicios selecciona 'EC2'
+4. En el menú lateral izquierdo, en la sección 'Elastic Block Storage' selecciona Volúmenes
+5. Pulsa el botón 'Create Volume'
+6. Selecciona 'General Purpose SSD (gp2)' y 'Size (GiB)' 5. La availability zone puede ser la que prefieras, pero recuerda en qué Availability Zone (AZ) creas el volumen puesto que la máquina virtual (VM) debe crearse en la misma AZ.
+7. Ahora deberías tener un volumen con state 'available'
+![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/volumen_2.jpg)
+Apunta el 'Volume ID', es el identificador que más adelante tendremos que indicar en el script para asociar nuestra máquina virtual a este volumen.
+
 ## Crear Elastic IP
+1. Asumiendo que acabas de terminar la sección anterior, en el menú lateral izquierdo selecciona 'Direcciones IP elásticas' dentro de la sección 'Red y seguridad'.
+2. Pulsa el botón 'Asignar la dirección IP elástica'
+3. Deja la selección por defecto 'Grupo de direcciones IPv4 de Amazon' y pulsa el botón asignar.
+4. Deberías llegar a una pantalla como la siguiente:
+![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/eip_1.jpg)
+Apunta tanto la 'Dirección IPv4 asignada' como el 'ID de asignnación'. La primera es la IP que usaremos para poder consultar la interfaz gráfica y a la que los dispositivos mandarán las mediciones. La segunda es el identificador que más adelante tendremos que indicar en el script para asociar nuestra máquina virtual a esta IP.
 ## Crear Security Group
+1. Asumiendo que acabas de terminar la sección anterior, en el menú lateral izquierdo selecciona 'Security Groups' dentro de la sección 'Red y seguridad'.
+2. Pulsa el botón 'Crear grupo de seguridad'
+3. Rellena un nombre y una descripción. En VPC te aparecerá la PVC por defecto, a menos que estés usando una cuenta AWS en la que hayas creado VPCs adicionales y quieras usar una de estas no lo toques.
+4. Añade las siguientes reglas de entrada:
+![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/security_group_1.jpg)
+NOTA: Sólo estamos permitiendo comunicación con el puerto que usará el broker MQTT y con el puerto que usaremos para consultar Grafana. No estamos permitiendo SSH pues eso haría nuestra máquina más vulnerable. Si fuese necesario hacer troubleshooting se habilitaría el SSH sólo desde la IP que estemos usando (esto estará descrito más adelante en una sección de troubleshooting).
+5. Mantén las reglas de salida como están (permitiendo todo el tráfico).
+6. Pulsa el botón 'Crear grupo de seguridad'
+
+## Crear par de claves
+1. Asumiendo que acabas de terminar la sección anterior, en el menú lateral izquierdo selecciona 'Par de claves' dentro de la sección 'Red y seguridad'.
+2. Pulsa el botón 'Crear par de claves'
+3. Escribe un nombre para el par de claves
+4. Selecciona el formato deseado del archivo. Tipicamente será pem, pero si tu intencción es usar PuTTy para conectar con la máquina selecciona ppk.
+5. Pulsa 'Crear par de claves'. Al hacerlo se descargará automáticamente tu clave privada. Guárdala en lugar seguro porque será la forma de acceder a tu máquina virtual.
+
+
 ## Crear imagen base
 ## Crear Scaling Group
 # ¿Por qué lo hacemos así?
@@ -38,3 +109,4 @@ Para entender por qué hemos elegido instalar nuestra solución de esta forma po
 ## Alternativas
 # Instalación en cluster K8s genérico
 # Subvenciones Cloud
+# Cómo revisar el consumo en AWS 
