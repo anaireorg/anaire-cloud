@@ -100,3 +100,33 @@ sleep 2
 kubectl --kubeconfig /home/ubuntu/.kube/config apply -f /home/ubuntu/mqttforward.yaml
 sleep 2
 #===========================================================
+
+#==============Watchdog to ensure K8s works=================
+cat << EOF >> /home/ubuntu/watchdog.service
+[Unit]
+After=network.service
+
+[Service]
+ExecStart=/home/ubuntu/watchdog.sh
+
+[Install]
+WantedBy=default.target
+EOF
+
+cat << EOF >> /home/ubuntu/watchdog.sh
+#!/bin/bash
+
+while ((1))
+do
+  sleep 600
+  kubectl get pods --kubeconfig /home/ubuntu/.kube/config || sudo reboot
+done
+EOF
+
+sudo chmod 664 /home/ubuntu/watchdog.service
+sudo chmod 744 /home/ubuntu/watchdog.sh
+sudo mv /home/ubuntu/watchdog.service  /etc/systemd/system/watchdog.service
+sudo systemctl daemon-reload
+sudo systemctl enable watchdog.service
+sudo systemctl start watchdog.service
+#===========================================================
