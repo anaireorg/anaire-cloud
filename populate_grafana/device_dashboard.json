@@ -96,8 +96,8 @@
         "format": "ppm",
         "label": null,
         "logBase": 1,
-        "max": 2000,
-        "min": 400,
+        "max": null,
+        "min": null,
         "show": true,
         "decimals": 0
       },
