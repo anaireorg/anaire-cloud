@@ -21,8 +21,8 @@ export eip_id=eipalloc-XXXXXX
 export PUBLIC_IP=$(aws ec2 describe-addresses --allocation-ids $eip_id --query 'Addresses[0].PublicIp'|tr -d '"')
 export GRAFANA_NODEPORT_PORT=30300
 export GRAFANA_ADMIN_PASSWORD="your_password"
+export DASHBOARD_TITLE="Colegio La Paloma"
 #===========================================================
-
 
 #==============Attach devices to instance===================
 #Get instance ID and attach to it the volume and the elastic IP
@@ -60,7 +60,7 @@ kubectl --kubeconfig /home/ubuntu/.kube/config apply -f https://raw.githubuserco
 #===========================================================
 
 #================Install anaire cloud stack=================
-for manifest in mqtt_broker mqttforward pushgateway prometheus grafana grafana-image-renderer; do
+for manifest in mqtt_broker mqttforward pushgateway prometheus grafana grafana-image-renderer thresholdupdater.yaml; do
   wget -P /home/ubuntu https://raw.githubusercontent.com/anaireorg/anaire-cloud/main/stack/${manifest}.yaml
 done
 
@@ -99,6 +99,9 @@ sleep 2
 #Lauch MQTT forwarder to pushgateway
 kubectl --kubeconfig /home/ubuntu/.kube/config apply -f /home/ubuntu/mqttforward.yaml
 sleep 2
+
+#Launch threshold updater process 
+( echo "cat <<EOF" ; cat /home/ubuntu/thresholdupdater.yaml ; echo EOF ) | sh | kubectl --kubeconfig /home/ubuntu/.kube/config apply -f -
 #===========================================================
 
 #==============Watchdog to ensure K8s works=================
