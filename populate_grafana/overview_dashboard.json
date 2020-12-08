@@ -11,7 +11,7 @@
     "style": "light",
     "refresh": "1m",
     "time": {
-    "from": "now-1h",
+    "from": "now-1m",
     "to": "now"
     }
   },
