@@ -237,7 +237,7 @@ def main():
         folder_dashboard_json = json.loads(folder_dashboard_template_json)
         folder_dashboard_json['folderId'] = folderId
         folder_dashboard_json['dashboard']['title'] = dashboard_config['messages'][language]['overview_dashboard']['title']
-        folder_dashboard_json['dashboard']['tags'] = [dashboard_config['messages'][language]['tags']['overview'],dashboard_config['messages'][language]['tags']['folder']]
+        folder_dashboard_json['dashboard']['tags'] = [dashboard_config['messages'][language]['tags']['folder']]
       
         #Add all users listed as vierwer to the directory viewer team 
         if ("viewer" in directory):
@@ -278,6 +278,7 @@ def main():
           print("    Creating device \'"+dev_name+"\' dashboard..." )
           dashboard_json = json.loads(device_dashboard_template_json)
           dashboard_json['dashboard']['title'] = dev_name
+          dashboard_json['dashboard']['tags'] = [ dashboard_config['messages'][language]['tags']['device'] ]
           dashboard_json['folderId'] = folderId
           
           dashboard_json['dashboard']['panels'][0]['title'] = dashboard_config['messages'][language]['device_dashboard']['CO2']['title']
