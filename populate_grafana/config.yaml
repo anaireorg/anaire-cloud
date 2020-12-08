@@ -13,10 +13,6 @@ overview_dashboards:
 messages:
 
     english:
-        tags:
-            overview: 'overview'
-            device: 'sensor'
-            folder: 'folder'
         device_dashboard:
             CO2:
                 title: 'CO2 ppm'
@@ -38,10 +34,6 @@ messages:
             link: 'Go to '
 
     spanish:
-        tags:
-            overview: 'resumen'
-            device: 'sensor'
-            folder: 'carpeta'
         device_dashboard: 
             CO2:
                 title: 'CO2 ppm'
