@@ -40,8 +40,12 @@
         "mode": "absolute",
         "steps": [
           {
-            "color": "green",
+            "color": "rgb(0, 0, 0)",
             "value": null
+          },
+          {
+            "color": "green",
+            "value": 100
           },
           {
             "color": "yellow",

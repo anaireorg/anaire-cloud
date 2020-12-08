@@ -316,9 +316,19 @@ def main():
           device_panel_json["gridPos"]['w'] = w_panel
           device_panel_json["gridPos"]['h'] = h_panel
           device_panel_json['targets'][0]['expr'] = "CO2{exported_job=\""+dev_uid+"\"}"
-          device_panel_json['fieldConfig']['defaults']['thresholds']['steps'][1]['value'] = dashboard_config['overview_dashboards']['thresholds']['warning']
-          device_panel_json['fieldConfig']['defaults']['thresholds']['steps'][2]['value'] = dashboard_config['overview_dashboards']['thresholds']['caution']
+          device_panel_json['fieldConfig']['defaults']['thresholds']['steps'][2]['value'] = dashboard_config['overview_dashboards']['thresholds']['warning']
+          device_panel_json['fieldConfig']['defaults']['thresholds']['steps'][3]['value'] = dashboard_config['overview_dashboards']['thresholds']['caution']
           device_panel_json['id'] = cont3+2
+          if panel_type == 'stat':
+            device_panel_json['options']['colorMode'] = 'background'
+            device_panel_json['options']['graphMode'] = 'none'
+            device_panel_json['targets'][0]['legendFormat'] = dashboard_config['messages'][language]['device_dashboard']['CO2']['title']
+            device_panel_json['targets'].append({'expr': "Temperature{exported_job=\""+dev_uid+"\"}"})
+            device_panel_json['targets'][1]['legendFormat'] = dashboard_config['messages'][language]['device_dashboard']['temperature']['title']
+            device_panel_json['targets'][1]['refId'] = "B"
+            device_panel_json['targets'].append({'expr': "Humidity{exported_job=\""+dev_uid+"\"}"})
+            device_panel_json['targets'][2]['legendFormat'] = dashboard_config['messages'][language]['device_dashboard']['humidity']['title']
+            device_panel_json['targets'][2]['refId'] = "C"
           
           #Create device CO2 dashboard
           device_CO2_dashboard_json = json.loads(folder_dashboard_template_json)
