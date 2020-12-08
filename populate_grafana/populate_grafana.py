@@ -330,16 +330,6 @@ def main():
             device_panel_json['targets'][2]['legendFormat'] = dashboard_config['messages'][language]['device_dashboard']['humidity']['title']
             device_panel_json['targets'][2]['refId'] = "C"
           
-          #Create device CO2 dashboard
-          device_CO2_dashboard_json = json.loads(folder_dashboard_template_json)
-          
-          device_CO2_dashboard_json['dashboard']['title'] = dev_name+' CO2'
-          device_CO2_dashboard_json['folderId'] = folderId
-
-          device_CO2_dashboard_json['dashboard']['tags'] = [dashboard_config['messages'][language]['tags']['overview'], dashboard_config['messages'][language]['tags']['device']]
-          device_CO2_dashboard_json['dashboard']['panels'].append(dict(device_panel_json))
-          device_CO2_dashboard=grafana_api.dashboard.update_dashboard(device_CO2_dashboard_json)
-        
           #Add panel to folder dashboard
           device_panel_json["gridPos"]['x'] = int(cont%num_panel_per_row)*w_panel
           device_panel_json["gridPos"]['y'] = int(cont/num_panel_per_row)*h_panel
