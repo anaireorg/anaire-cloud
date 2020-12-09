@@ -67,6 +67,11 @@ def get_user_password(login, info=None):
   
   return password;
   
+def update_org_preferences(update):
+  URL  = 'http://'+GRAFANA_URL+'/api/org/preferences'
+  HEADERS = {'Authorization': 'Basic '+base64.b64encode(('admin:'+password).encode('ascii')).decode('ascii'), 'Content-type': 'application/json'}
+  return put(URL,json.dumps(update),HEADERS)
+
 def update_user_preferences(login, update):
   URL  = 'http://'+GRAFANA_URL+'/api/user/preferences'
   HEADERS = {'Authorization': 'Basic '+base64.b64encode((login+':'+get_user_password(login)).encode('ascii')).decode('ascii'), 'Content-type': 'application/json'}
@@ -227,8 +232,8 @@ def main():
         folder = createFolder(dir_name)
         folderId = folder['id']
         folder_uid = folder['uid']
-        #Remove default permissions
-        grafana_api.folder.update_folder_permissions(folder_uid, {'items': []})
+        #Remove default permissions - COMMENTED TO ALLOW GUEST USER TO SEE ALL DASHBOARDS
+        #grafana_api.folder.update_folder_permissions(folder_uid, {'items': []})
         #Add 'general' teams permissions
         addTeamToFolder('general_viewer', folder_uid, 'Viewer')
         addTeamToFolder('general_editor', folder_uid, 'Editor')
@@ -389,7 +394,11 @@ def main():
       print("Creating \'"+config['name']+"\' dashboard..." )
       main_dashboard=grafana_api.dashboard.update_dashboard(main_dashboard_json)
       #print(yaml.safe_dump(main_dashboard_json['dashboard']['panels']))
-      
+     
+      users_passwords['admin'] = password
+      update_user_preferences('admin', {'homeDashboardId': main_dashboard['id']})
+      update_org_preferences({'homeDashboardId': main_dashboard['id']})
+
     except yaml.YAMLError as exc:
       print(exc)
 
