@@ -66,6 +66,14 @@
       "thresholds": [
         {
           "value": null,
+          "colorMode": "warning",
+          "op": "gt",
+          "fill": false,
+          "line": true,
+          "yaxis": "left"
+        },  
+        {
+          "value": null,
           "colorMode": "critical",
           "op": "gt",
           "fill": false,
