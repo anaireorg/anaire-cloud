@@ -35,6 +35,9 @@ file.close()
 file = open('device_panel.json')
 device_panel_template_json = file.read()
 file.close()
+file = open('editor_dashboard.json')
+editor_dashboard_template_json = file.read()
+file.close()
 
 #TODO - Hacer script idempotente
 #Borrar elementos?? creo que no
@@ -200,6 +203,17 @@ def main():
           teams['general_editor'].append(user)
           addUserToTeam(user,'general_editor')
 
+      #Create (if it does not extist) dashboard to manage thredsholds
+      editor_url = 'http://' + GRAFANA_URL + '/api/search?tag=editor'
+      editor_list = json.loads(requests.get(url=editor_url, headers=HEADERS).content)
+      if len(editor_list) == 0:
+        print('Create dashboard editor')
+        editor_dashboard_json = json.loads(editor_dashboard_template_json)
+        editor_dashboard = grafana_api.dashboard.update_dashboard({'dashboard': editor_dashboard_json})
+        valid_ids.append(editor_dashboard['id'])
+      else:
+        valid_ids.append(editor_list[0]['id'])
+
       #Create general dashboard json
       main_dashboard_json = json.loads(folder_dashboard_template_json)
       main_dashboard_json['dashboard']['title'] = config['name']
@@ -326,7 +340,22 @@ def main():
             print("    Creating device \'"+dev_name+"\' dashboard..." )
             dashboard_json = json.loads(device_dashboard_template_json)
             dashboard_json['dashboard']['title'] = dev_name
+            dashboard_json['dashboard']['uid'] = dev_uid
+
+            editor_url = 'http://' + GRAFANA_URL + '/api/search?tag=editor'
+            editor_uid = json.loads(requests.get(url=editor_url, headers=HEADERS).content)[0]['uid']
+
+            dashboard_json['dashboard']['links'] = [{
+              'icon': 'dashboard',
+              'targetBlank': True,
+              'title': 'Editor',
+              'type': 'link',
+              'url': 'http://' + GRAFANA_URL + '/d/' + editor_uid + '/editor?var-id=' + dev_uid + '&var-Warning=' + \
+                      str(dashboard_config['overview_dashboards']['thresholds']['warning']) + \
+                      '&var-Caution=' + str(dashboard_config['overview_dashboards']['thresholds']['caution'])  + \
+                      '&var-db_uid=' + dev_uid + '&var-folderId=' + str(folderId)
             
+            }]
             dashboard_json['dashboard']['panels'][0]['title'] = dashboard_config['messages'][language]['device_dashboard']['CO2']['title']
             dashboard_json['dashboard']['panels'][0]['description'] = dashboard_config['messages'][language]['device_dashboard']['CO2']['description'][0] + dev_name + \
               dashboard_config['messages'][language]['device_dashboard']['CO2']['description'][1] + dev_uid
