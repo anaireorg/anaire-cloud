@@ -46,6 +46,14 @@
             "$id"
           ],
           [
+            "name",
+            "$name"
+          ],
+          [
+            "update",
+            "$update"
+          ],
+          [
             "warning",
             "$Warning"
           ]
@@ -264,5 +272,6 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Editor"
+  "title": "Editor",
+  "uid": "editor"
 }

@@ -34,8 +34,11 @@ def do_update():
     return "ok"
 
 def grafana_update(update):
-    print('Send mqtt message')
-    
+    #if folderId is empty it is a call from the generic dashboard and no update in grafana proceed
+    if update['folderId'] == '':
+        print('Update from generic dashboard')
+        return
+
     #Update 'general' dashboard
     URL  = 'http://' + GRAFANA_URL + '/api/search?type=dash-db&tag=general'
     response = json.loads(requests.get(url=URL, headers=HEADERS).content)
@@ -60,12 +63,15 @@ def grafana_update(update):
     update_device_dashboard(update, device_dashboard_url)
 
 def device_update(update):
+    print('Send mqtt message')
     data = {
       'warning': update['warning'],
       'caution': update['caution'],
-      'alarm': update['alarm']
+      'alarm': update['alarm'],
+      'name': update['name'],
+      'update': update['update']
     }
-    client.publish("config/" + update['id'],json.dumps(data))
+    client.publish("config/" + str(update['id']),json.dumps(data))
 
 def on_publish(client,userdata,result):
   print("data published \n")
@@ -89,7 +95,7 @@ def update_summary_dashboard(sensor_info, dashboard_url):
     #Get the dashboard
     area_dashboard = json.loads(requests.get(url=dashboard_url, headers=HEADERS).content)
     #Find the panel with the link to the dashboard with uid sensor_info['db_uid']
-    panel = next(panel for panel in area_dashboard['dashboard']['panels'] if (panel['type'] == 'stat' and panel['links'][0]['url'].split('/')[4] == sensor_info['db_uid']))
+    panel = next(panel for panel in area_dashboard['dashboard']['panels'] if (panel['type'] == 'stat' and panel['links'][0]['url'].split('/')[4] == str(sensor_info['db_uid'])))
     #Update the caution thredshold
     panel['fieldConfig']['defaults']['thresholds']['steps'][2]['value'] = sensor_info['warning']
     panel['fieldConfig']['defaults']['thresholds']['steps'][3]['value'] = sensor_info['caution']
