@@ -12,6 +12,7 @@ if (len(sys.argv) != 4):
   exit()
 
 #GLOBAL VARIABLES
+valid_ids = []
 file = open('config.yaml')
 dashboard_config = yaml.safe_load(file.read())
 file.close()
@@ -39,8 +40,21 @@ file = open('editor_dashboard.json')
 editor_dashboard_template_json = file.read()
 file.close()
 
-#TODO - Hacer script idempotente
-#Borrar elementos?? creo que no
+def createUpdateDashboard(jsonFile, tag):
+  tag_url = 'http://' + GRAFANA_URL + '/api/search?tag=' + tag
+  HEADERS = {'Authorization': 'Basic '+base64.b64encode(('admin:'+password).encode('ascii')).decode('ascii'), 'Content-type': 'application/json'}
+  tag_list = json.loads(requests.get(url=tag_url, headers=HEADERS).content)
+  if len(tag_list) == 0:
+    print('Create dashboard from '+jsonFile)
+    file = open(jsonFile)
+    db_json = file.read()
+    file.close()
+    db = json.loads(db_json)
+    db['tags'] = [tag]
+    id = grafana_api.dashboard.update_dashboard({'dashboard': db})['id']
+  else:
+    id = tag_list[0]['id']
+  valid_ids.append(id)
 
 def strToBase64(text):
   return base64.b64encode((text).encode('ascii')).decode('ascii')
@@ -162,7 +176,6 @@ def addTeamToDashboard(team_name, folder_title, dashboard_title, role):
     return {'message': 'Team already present'}
 
 def main():
-  valid_ids = []
   HEADERS = {'Authorization': 'Basic '+base64.b64encode(('admin:'+password).encode('ascii')).decode('ascii'), 'Content-type': 'application/json'}
   with open(config_file, 'r') as stream:
     try:
@@ -202,6 +215,10 @@ def main():
           print("Adding user "+user+" to \'general_editor\' team...")
           teams['general_editor'].append(user)
           addUserToTeam(user,'general_editor')
+
+      #Create generic dashboards QR and detalle
+      createUpdateDashboard('QR.json', 'QR')
+      createUpdateDashboard('detalle.json', 'detail')
 
       #Create (if it does not extist) dashboard to manage thredsholds
       editor_url = 'http://' + GRAFANA_URL + '/api/search?tag=editor'
