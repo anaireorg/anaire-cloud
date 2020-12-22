@@ -1,0 +1,268 @@
+{
+  "links": [],
+  "panels": [
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 3,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "backgroundColor": "rgb(35, 63, 143)",
+        "contentType": "application/json",
+        "foregroundColor": "rgb(255, 255, 255)",
+        "icon": "upload",
+        "isAuth": false,
+        "method": "GET",
+        "orientation": "center",
+        "params": [
+          [
+            "alarm",
+            "$Alarm"
+          ],
+          [
+            "caution",
+            "$Caution"
+          ],
+          [
+            "db_uid",
+            "$db_uid"
+          ],
+          [
+            "folderId",
+            "$folderId"
+          ],
+          [
+            "id",
+            "$id"
+          ],
+          [
+            "warning",
+            "$Warning"
+          ]
+        ],
+        "password": "password",
+        "text": "Update",
+        "type": "query",
+        "url": "http://99.81.90.83:30880/update",
+        "username": "user",
+        "variant": "custom"
+      },
+      "pluginVersion": "7.3.5",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "type": "cloudspout-button-panel"
+    }
+  ],
+  "schemaVersion": 26,
+  "style": "dark",
+  "tags": [
+    "editor"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "",
+          "value": ""
+        },
+        "error": null,
+        "hide": 0,
+        "label": null,
+        "name": "name",
+        "options": [
+          {
+            "selected": true,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "skipUrlSync": false,
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "",
+          "value": ""
+        },
+        "error": null,
+        "hide": 0,
+        "label": null,
+        "name": "id",
+        "options": [
+          {
+            "selected": true,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "constant"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "700",
+          "value": "700"
+        },
+        "error": null,
+        "hide": 0,
+        "label": "Warning",
+        "name": "Warning",
+        "options": [
+          {
+            "selected": true,
+            "text": "700",
+            "value": "700"
+          }
+        ],
+        "query": "700",
+        "skipUrlSync": false,
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "1000",
+          "value": "1000"
+        },
+        "error": null,
+        "hide": 0,
+        "label": "Caution",
+        "name": "Caution",
+        "options": [
+          {
+            "selected": true,
+            "text": "1000",
+            "value": "1000"
+          }
+        ],
+        "query": "1000",
+        "skipUrlSync": false,
+        "type": "textbox"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "ON",
+          "value": "ON"
+        },
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": "Alarm",
+        "multi": false,
+        "name": "Alarm",
+        "options": [
+          {
+            "selected": true,
+            "text": "ON",
+            "value": "ON"
+          },
+          {
+            "selected": false,
+            "text": "OFF",
+            "value": "OFF"
+          }
+        ],
+        "query": "ON,OFF",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "OFF",
+          "value": "OFF"
+        },
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": "Last version",
+        "multi": false,
+        "name": "update",
+        "options": [
+          {
+            "selected": true,
+            "text": "OFF",
+            "value": "OFF"
+          },
+          {
+            "selected": false,
+            "text": "ON",
+            "value": "ON"
+          }
+        ],
+        "query": "OFF,ON",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "",
+          "value": ""
+        },
+        "error": null,
+        "hide": 2,
+        "label": "",
+        "name": "db_uid",
+        "options": [
+          {
+            "selected": false,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "skipUrlSync": false,
+        "type": "constant"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "",
+          "value": ""
+        },
+        "error": null,
+        "hide": 2,
+        "label": null,
+        "name": "folderId",
+        "options": [
+          {
+            "selected": false,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "skipUrlSync": false,
+        "type": "constant"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-1m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Editor"
+}

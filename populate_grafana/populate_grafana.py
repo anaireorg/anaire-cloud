@@ -209,6 +209,7 @@ def main():
       if len(editor_list) == 0:
         print('Create dashboard editor')
         editor_dashboard_json = json.loads(editor_dashboard_template_json)
+        editor_dashboard_json['uid'] = 'editor'
         editor_dashboard = grafana_api.dashboard.update_dashboard({'dashboard': editor_dashboard_json})
         valid_ids.append(editor_dashboard['id'])
       else:
@@ -219,6 +220,7 @@ def main():
       main_dashboard_json['dashboard']['title'] = config['name']
       main_dashboard_json['dashboard']['tags'] = [ 'general' ]
       main_dashboard_json['folderId'] = 0
+      main_dashboard_json['uid'] = 'general'
       main_dashboard_next_y = 0
           
       #If general dashboard already exists in grafana reuse id and uid
@@ -322,11 +324,11 @@ def main():
         for device in directory["device"]:
           dev_name = device["name"]
           dev_uid = device["uid"]
-          print('  '+dev_name+':')
+          print('  '+str(dev_name)+':')
           
           #Check if there is alredy a dashboard called <dev_name> in folder <folderId>
           existe = False
-          sensor_dashboard_list_url = 'http://' + GRAFANA_URL + '/api/search?type=dash-db&query='+dev_name
+          sensor_dashboard_list_url = 'http://' + GRAFANA_URL + '/api/search?type=dash-db&query='+str(dev_name)
           sensor_dashboard_list = json.loads(requests.get(url=sensor_dashboard_list_url, headers=HEADERS).content)
           for dashboard in sensor_dashboard_list:
             if 'folderId' in dashboard and dashboard['folderId'] == folderId:
@@ -337,10 +339,10 @@ def main():
 
           if (not existe):
             #Create device detailed dashboard
-            print("    Creating device \'"+dev_name+"\' dashboard..." )
+            print("    Creating device \'"+str(dev_name)+"\' dashboard..." )
             dashboard_json = json.loads(device_dashboard_template_json)
-            dashboard_json['dashboard']['title'] = dev_name
-            dashboard_json['dashboard']['uid'] = dev_uid
+            dashboard_json['dashboard']['title'] = str(dev_name)
+            dashboard_json['dashboard']['uid'] = str(dev_uid)
 
             editor_url = 'http://' + GRAFANA_URL + '/api/search?tag=editor'
             editor_uid = json.loads(requests.get(url=editor_url, headers=HEADERS).content)[0]['uid']
@@ -350,28 +352,29 @@ def main():
               'targetBlank': True,
               'title': 'Editor',
               'type': 'link',
-              'url': 'http://' + GRAFANA_URL + '/d/' + editor_uid + '/editor?var-id=' + dev_uid + '&var-Warning=' + \
-                      str(dashboard_config['overview_dashboards']['thresholds']['warning']) + \
+              'url': 'http://' + GRAFANA_URL + '/d/' + editor_uid + '/editor?var-id=' + str(dev_uid) + \
+                      '&var-name=' + str(dev_name) + \
+                      '&var-Warning=' + str(dashboard_config['overview_dashboards']['thresholds']['warning']) + \
                       '&var-Caution=' + str(dashboard_config['overview_dashboards']['thresholds']['caution'])  + \
-                      '&var-db_uid=' + dev_uid + '&var-folderId=' + str(folderId)
+                      '&var-db_uid=' + str(dev_uid) + '&var-folderId=' + str(folderId)
             
             }]
             dashboard_json['dashboard']['panels'][0]['title'] = dashboard_config['messages'][language]['device_dashboard']['CO2']['title']
-            dashboard_json['dashboard']['panels'][0]['description'] = dashboard_config['messages'][language]['device_dashboard']['CO2']['description'][0] + dev_name + \
-              dashboard_config['messages'][language]['device_dashboard']['CO2']['description'][1] + dev_uid
-            dashboard_json['dashboard']['panels'][0]['targets'][0]['expr'] = "CO2{exported_job=\""+dev_uid+"\"}"
+            dashboard_json['dashboard']['panels'][0]['description'] = dashboard_config['messages'][language]['device_dashboard']['CO2']['description'][0] + str(dev_name) + \
+              dashboard_config['messages'][language]['device_dashboard']['CO2']['description'][1] + str(dev_uid)
+            dashboard_json['dashboard']['panels'][0]['targets'][0]['expr'] = "CO2{exported_job=\""+str(dev_uid)+"\"}"
             dashboard_json['dashboard']['panels'][0]['thresholds'][0]['value'] = dashboard_config['overview_dashboards']['thresholds']['warning']
             dashboard_json['dashboard']['panels'][0]['thresholds'][1]['value'] = dashboard_config['overview_dashboards']['thresholds']['caution']
             
             dashboard_json['dashboard']['panels'][1]['title'] = dashboard_config['messages'][language]['device_dashboard']['temperature']['title']
-            dashboard_json['dashboard']['panels'][1]['description'] = dashboard_config['messages'][language]['device_dashboard']['temperature']['description'][0] + dev_name + \
-              dashboard_config['messages'][language]['device_dashboard']['temperature']['description'][1] + dev_uid
-            dashboard_json['dashboard']['panels'][1]['targets'][0]['expr'] = "Temperature{exported_job=\""+dev_uid+"\"}"
+            dashboard_json['dashboard']['panels'][1]['description'] = dashboard_config['messages'][language]['device_dashboard']['temperature']['description'][0] + str(dev_name) + \
+              dashboard_config['messages'][language]['device_dashboard']['temperature']['description'][1] + str(dev_uid)
+            dashboard_json['dashboard']['panels'][1]['targets'][0]['expr'] = "Temperature{exported_job=\""+str(dev_uid)+"\"}"
             
             dashboard_json['dashboard']['panels'][2]['title'] = dashboard_config['messages'][language]['device_dashboard']['humidity']['title']
-            dashboard_json['dashboard']['panels'][2]['description'] = dashboard_config['messages'][language]['device_dashboard']['humidity']['description'][0] + dev_name + \
-              dashboard_config['messages'][language]['device_dashboard']['humidity']['description'][1] + dev_uid
-            dashboard_json['dashboard']['panels'][2]['targets'][0]['expr'] = "Humidity{exported_job=\""+dev_uid+"\"}"
+            dashboard_json['dashboard']['panels'][2]['description'] = dashboard_config['messages'][language]['device_dashboard']['humidity']['description'][0] + str(dev_name) + \
+              dashboard_config['messages'][language]['device_dashboard']['humidity']['description'][1] + str(dev_uid)
+            dashboard_json['dashboard']['panels'][2]['targets'][0]['expr'] = "Humidity{exported_job=\""+str(dev_uid)+"\"}"
             dashboard_json['folderId'] = folderId
             dashboard = grafana_api.dashboard.update_dashboard(dashboard_json)
             sensor_dashboard_url = 'http://' + GRAFANA_URL + '/api/dashboards/uid/' + dashboard['uid']
@@ -385,20 +388,20 @@ def main():
           device_panel_url='http://' + GRAFANA_URL + '/d/' + device_dashboard['uid'] + '/' + device_dashboard['title']
           device_panel_json = json.loads(device_panel_template_json)
           device_panel_json['type'] = panel_type
-          device_panel_json['title'] = dev_name
-          device_panel_json['links'][0]['title'] = dashboard_config['messages'][language]['overview_dashboard']['link']+dev_name
+          device_panel_json['title'] = str(dev_name)
+          device_panel_json['links'][0]['title'] = dashboard_config['messages'][language]['overview_dashboard']['link']+str(dev_name)
           device_panel_json['links'][0]['url'] = device_panel_url
           device_panel_json['links'][0]['targetBlank'] = True
           device_panel_json['fieldConfig']['defaults']['links'] = list()
           device_panel_json['fieldConfig']['defaults']['links'].append(dict())
-          device_panel_json['fieldConfig']['defaults']['links'][0]['title'] = dashboard_config['messages'][language]['overview_dashboard']['link']+dev_name
+          device_panel_json['fieldConfig']['defaults']['links'][0]['title'] = dashboard_config['messages'][language]['overview_dashboard']['link']+str(dev_name)
           device_panel_json['fieldConfig']['defaults']['links'][0]['url'] = device_panel_url
           device_panel_json['fieldConfig']['defaults']['links'][0]['targetBlank'] = True
           device_panel_json["gridPos"]['x'] = 0
           device_panel_json["gridPos"]['y'] = 0
           device_panel_json["gridPos"]['w'] = w_panel
           device_panel_json["gridPos"]['h'] = h_panel
-          device_panel_json['targets'][0]['expr'] = "CO2{exported_job=\""+dev_uid+"\"}"
+          device_panel_json['targets'][0]['expr'] = "CO2{exported_job=\""+str(dev_uid)+"\"}"
           device_panel_json['fieldConfig']['defaults']['thresholds']['steps'][2]['value'] = warning
           device_panel_json['fieldConfig']['defaults']['thresholds']['steps'][3]['value'] = caution
           device_panel_json['id'] = cont3+2
@@ -406,10 +409,10 @@ def main():
             device_panel_json['options']['colorMode'] = 'background'
             device_panel_json['options']['graphMode'] = 'none'
             device_panel_json['targets'][0]['legendFormat'] = dashboard_config['messages'][language]['device_dashboard']['CO2']['title']
-            device_panel_json['targets'].append({'expr': "Temperature{exported_job=\""+dev_uid+"\"}"})
+            device_panel_json['targets'].append({'expr': "Temperature{exported_job=\""+str(dev_uid)+"\"}"})
             device_panel_json['targets'][1]['legendFormat'] = dashboard_config['messages'][language]['device_dashboard']['temperature']['title']
             device_panel_json['targets'][1]['refId'] = "B"
-            device_panel_json['targets'].append({'expr': "Humidity{exported_job=\""+dev_uid+"\"}"})
+            device_panel_json['targets'].append({'expr': "Humidity{exported_job=\""+str(dev_uid)+"\"}"})
             device_panel_json['targets'][2]['legendFormat'] = dashboard_config['messages'][language]['device_dashboard']['humidity']['title']
             device_panel_json['targets'][2]['refId'] = "C"
           
@@ -436,32 +439,32 @@ def main():
           #Add all users listed as vierwer to the device viewer team
           if ("viewer" in device):
             #Create team to provide viewer rights to the device dashboard
-            print("    Creating \'"+dir_name+"_"+dev_name+"_viewer\' team...")
-            createTeam(dir_name+"_"+dev_name+'_viewer')
-            teams[dir_name+"_"+dev_name+'_viewer']=list()
-            addTeamToDashboard(dir_name+"_"+dev_name+'_viewer', folder['title'], dev_name, 'Viewer')
-            addTeamToDashboard(dir_name+"_"+dev_name+'_viewer', folder['title'], dev_name+' CO2', 'Viewer')
+            print("    Creating \'"+dir_name+"_"+str(dev_name)+"_viewer\' team...")
+            createTeam(dir_name+"_"+str(dev_name)+'_viewer')
+            teams[dir_name+"_"+str(dev_name)+'_viewer']=list()
+            addTeamToDashboard(dir_name+"_"+str(dev_name)+'_viewer', folder['title'], str(dev_name), 'Viewer')
+            addTeamToDashboard(dir_name+"_"+str(dev_name)+'_viewer', folder['title'], str(dev_name)+' CO2', 'Viewer')
             
             viewer = device["viewer"]
             for user in viewer:
-              print("      Adding user \'"+user+"\' to \'"+dir_name+"_"+dev_name+"_viewer\' team...")
-              teams[dir_name+"_"+dev_name+'_viewer'].append(user)
-              addUserToTeam(user,dir_name+"_"+dev_name+'_viewer')
+              print("      Adding user \'"+user+"\' to \'"+dir_name+"_"+str(dev_name)+"_viewer\' team...")
+              teams[dir_name+"_"+str(dev_name)+'_viewer'].append(user)
+              addUserToTeam(user,dir_name+"_"+str(dev_name)+'_viewer')
               update_user_preferences(user,{'homeDashboardId': device_CO2_dashboard['id']})
               
           #Add all users listed as editor to the device viewer team
           if ("editor" in device):
             #Create team to provide editor rights to the device dashboard
-            print("    Creating \'"+dir_name+"_"+dev_name+"_editor\' team...")
-            createTeam(dir_name+"_"+dev_name+'_editor')
-            teams[dir_name+"_"+dev_name+'_editor']=list()
-            addTeamToDashboard(dir_name+"_"+dev_name+'_editor', folder['title'], dev_name, 'Editor')
+            print("    Creating \'"+dir_name+"_"+str(dev_name)+"_editor\' team...")
+            createTeam(dir_name+"_"+str(dev_name)+'_editor')
+            teams[dir_name+"_"+str(dev_name)+'_editor']=list()
+            addTeamToDashboard(dir_name+"_"+str(dev_name)+'_editor', folder['title'], str(dev_name), 'Editor')
             
             editor = device["editor"]
             for user in editor:
-              print("      Adding user \'"+user+"\' to \'"+dir_name+"_"+dev_name+"_editor\' team...")
-              teams[dir_name+"_"+dev_name+'_editor'].append(user)
-              addUserToTeam(user,dir_name+"_"+dev_name+'_editor')
+              print("      Adding user \'"+user+"\' to \'"+dir_name+"_"+str(dev_name)+"_editor\' team...")
+              teams[dir_name+"_"+str(dev_name)+'_editor'].append(user)
+              addUserToTeam(user,dir_name+"_"+str(dev_name)+'_editor')
               
         main_dashboard_next_y = y + h_panel
           
