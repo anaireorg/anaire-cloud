@@ -39,11 +39,11 @@ data:
     pip install bottle
     while ((1))
     do
-      python config_api_server.py ${PUSHGATEWAY_NP_SERVICE_HOST}:${PUSHGATEWAY_NP_SERVICE_PORT} "${GRAFANA_ADMIN_PASSWORD}" ${MQTT_NP_SERVICE_HOST}:${MQTT_NP_SERVICE_PORT}
+      python /config/api_server.py \${PUSHGATEWAY_NP_SERVICE_HOST}:\${PUSHGATEWAY_NP_SERVICE_PORT} "${GRAFANA_ADMIN_PASSWORD}" \${MQTT_NP_SERVICE_HOST}:\${MQTT_NP_SERVICE_PORT}
       echo "ERROR: Script failed"
     done
     
-  config_api_server.py: |
+  api_server.py: |
     from bottle import route, run, request
     import json
     import sys
