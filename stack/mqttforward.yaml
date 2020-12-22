@@ -73,7 +73,7 @@ data:
             msg = 'CO2 ' + str(payload.pop('CO2', 0)) + '\n' + \
                   'Temperature ' + str(payload.pop('temperature', 0)) + '\n' + \
                   'Humidity ' + str(payload.pop('humidity', 0)) + '\n'
-            URL  = 'http://' + sys.argv[1] + ':9091/metrics/job/' + device_id
+            URL  = 'http://' + sys.argv[1] + ':9091/metrics/job/' + str(device_id)
             pushdata(msg, URL)
         else:
             print( 'ERROR: Malformed message' + str(payload))
