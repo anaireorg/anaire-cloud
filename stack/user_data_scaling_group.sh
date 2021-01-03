@@ -15,7 +15,7 @@ export eip_id=eipalloc-XXXXXX
 #---------------
 # - Grafana NodePort
 apt update && apt install -y jq
-export PUBLIC_IP=$(aws ec2 describe-addresses --allocation-ids $eip_id --query 'Addresses[0].Tags' | jq '.[] | select(.Key=="dns") | .Value')
+export PUBLIC_IP=$(aws ec2 describe-addresses --allocation-ids $eip_id --query 'Addresses[0].Tags' | jq '.[] | select(.Key=="dns") | .Value' | tr -d '"')
 export GRAFANA_NODEPORT_PORT=30300
 export GRAFANA_ADMIN_PASSWORD="your_password"
 #===========================================================
@@ -56,7 +56,7 @@ kubectl --kubeconfig /home/ubuntu/.kube/config apply -f https://raw.githubuserco
 #===========================================================
 
 #================Install anaire cloud stack=================
-for manifest in nginx mqtt_broker mqttforward pushgateway prometheus grafana grafana-image-renderer apiserver; do
+for manifest in nginx mqtt_broker mqttforward pushgateway prometheus grafana grafana-image-renderer apiserver cleaner_cronjob; do
   wget -P /home/ubuntu https://raw.githubusercontent.com/anaireorg/anaire-cloud/main/stack/${manifest}.yaml
 done
 
@@ -103,6 +103,9 @@ sleep 2
 #Launch nginx 
 ( echo "cat <<EOF" ; cat /home/ubuntu/nginx.yaml; echo EOF ) | sh | kubectl --kubeconfig /home/ubuntu/.kube/config apply -f -
 sleep 2
+
+#Lauch pushgateway cleaner cronjob
+kubectl --kubeconfig /home/ubuntu/.kube/config apply -f /home/ubuntu/cleaner_cronjob.yaml
 #===========================================================
 
 #==============Watchdog to ensure K8s works=================

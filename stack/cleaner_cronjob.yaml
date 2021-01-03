@@ -1,0 +1,71 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: pushgateway-cleaner
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: pushgateway-cleaner
+            image: python
+            command: ["/bin/bash"]
+            args: ["-c","/config/run.sh"]
+            volumeMounts:
+              - name: cleaner
+                mountPath: /config/
+            resources:
+              requests:
+                memory: "50Mi"
+                cpu: "100m"
+              limits:
+                memory: "100Mi"
+                cpu: "100m"
+          restartPolicy: OnFailure
+          volumes:
+          - name: cleaner
+            configMap:
+              name: cleaner
+              defaultMode: 0777
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: cleaner
+data:
+  run.sh: |
+    #!/bin/bash
+    pip install requests
+    echo 'running: /config/cleaner.py ${PUSHGATEWAY_NP_SERVICE_HOST}:${PUSHGATEWAY_NP_SERVICE_PORT}'
+    python /config/cleaner.py ${PUSHGATEWAY_NP_SERVICE_HOST}:${PUSHGATEWAY_NP_SERVICE_PORT}
+    
+  cleaner.py: |
+    import requests
+    import json
+    import time
+    import sys
+
+    max_age = 5 #maximum age in minutes
+    PUSHGATEWAT_URL = sys.argv[1]
+
+
+    def main():
+      response = requests.request('GET', 'http://' + PUSHGATEWAT_URL + '/api/v1/metrics')
+      metrics = json.loads(response.text)
+      now = time.localtime()
+      for data in metrics['data']:
+        co2 = data.get('CO2', False)
+        if co2:
+          last_time = time.strptime(co2['time_stamp'][:16], '%Y-%m-%dT%H:%M')
+          if (int((time.mktime(now) - time.mktime(last_time)) / 60) > max_age):
+            url = 'http://' + PUSHGATEWAT_URL + '/metrics/job/' + co2['metrics'][0]['labels']['job']
+            print('DELETE ' + url)
+            response = requests.request('DELETE', url)
+
+
+    if __name__ == "__main__":
+      main()
+
+
