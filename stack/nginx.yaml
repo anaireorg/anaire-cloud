@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bastion
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bastion
+  template:
+    metadata:
+      labels:
+        app: bastion
+    spec:
+      containers:
+        - name: bastion
+          image: python
+          command: ["sleep"]
+          args: ["infinity"]
+          volumeMounts:
+            - name: default-conf
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "100m"
+            limits:
+              memory: "100Mi"
+              cpu: "100m"
+      volumes:
+        - name: default-conf
+          configMap:
+            name: default-conf
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: default-conf
+data:
+  default.conf: |
+    server {
+        listen       80;
+        listen  [::]:80;
+        server_name  localhost;
+
+        location / {
+            rewrite / http://${PUBLIC_IP}:${GRAFANA_NODEPORT_PORT}?kiosk break;
+            #root   /usr/share/nginx/html;
+            #index  index.html index.htm;
+        }
+
+        location ~ /sensor {
+            rewrite /sensor/(.*)/(.*) http://${PUBLIC_IP}:${GRAFANA_NODEPORT_PORT}/d/lastvalue?var-uid=$1&var-name=$2&kiosk  break;
+            rewrite /sensor/(.*) http://${PUBLIC_IP}:${GRAFANA_NODEPORT_PORT}/d/lastvalue?var-uid=$1&kiosk  break;
+
+        }
+
+        location ~ /detalle {
+            rewrite /detalle/(.*)/(.*) http://${PUBLIC_IP}:${GRAFANA_NODEPORT_PORT}/d/lastvalue?var-uid=$1&var-name=$2  break;
+            rewrite /detalle/(.*) http://${PUBLIC_IP}:${GRAFANA_NODEPORT_PORT}/d/lastvalue?var-uid=$1  break;
+
+        }
+
+        #error_page  404              /404.html;
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   /usr/share/nginx/html;
+        }
+    }

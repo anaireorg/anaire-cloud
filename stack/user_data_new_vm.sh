@@ -6,10 +6,6 @@ exec 2>&1
 #==========================VARIABLES=================================
 #AWS variables
 #-------------
-# - AWS credentials
-export AWS_ACCESS_KEY_ID="your_aws_access_key_id"
-export AWS_SECRET_ACCESS_KEY="your_aws_secret_access_key"
-export AWS_DEFAULT_REGION="your_default_region"
 # - AWS volume id used to provide persistence
 export vol_id=vol-XXXXX
 # - AWS elastict IP used to ensure new machines in the scaling group have always the same IP

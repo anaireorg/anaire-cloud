@@ -18,6 +18,13 @@ spec:
           env:
           - name: ENABLE_METRICS
             value: 'true'
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "100m"
+            limits:
+              memory: "1Gi"
+              cpu: "100m"
 ---
 apiVersion: v1
 kind: Service

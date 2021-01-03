@@ -35,6 +35,13 @@ spec:
             - name: grafana-config
               mountPath: /etc/grafana/provisioning/datasources/datasource.yaml
               subPath: datasource.yaml
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: 1
+            limits:
+              memory: "256Mi"
+              cpu: 1
       volumes:
         - name: grafana-storage-volume
           hostPath:

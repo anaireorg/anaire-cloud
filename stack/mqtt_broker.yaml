@@ -21,6 +21,13 @@ spec:
             - name: mqtt-config
               mountPath: /mosquitto/config/mosquitto.conf
               subPath: mosquitto.conf
+          resources:
+            requests:
+              memory: "50Mi"
+              cpu: "100m"
+            limits:
+              memory: "50Mi"
+              cpu: "100m"
       volumes:
         - name: mqtt-storage-volume
           hostPath:

@@ -20,6 +20,13 @@ spec:
           volumeMounts:
             - name: pushgateway-storage-volume
               mountPath: /pushgateway/
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "100m"
+            limits:
+              memory: "100Mi"
+              cpu: "100m"
       volumes:
         - name: pushgateway-storage-volume
           hostPath:

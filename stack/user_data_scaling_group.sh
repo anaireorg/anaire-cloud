@@ -6,10 +6,6 @@ exec 2>&1
 #==========================VARIABLES=================================
 #AWS variables
 #-------------
-# - AWS credentials
-export AWS_ACCESS_KEY_ID="your_aws_access_key_id"
-export AWS_SECRET_ACCESS_KEY="your_aws_secret_access_key"
-export AWS_DEFAULT_REGION="your_default_region"
 # - AWS volume id used to provide persistence
 export vol_id=vol-XXXXX
 # - AWS elastict IP used to ensure new machines in the scaling group have always the same IP
@@ -59,7 +55,7 @@ kubectl --kubeconfig /home/ubuntu/.kube/config apply -f https://raw.githubuserco
 #===========================================================
 
 #================Install anaire cloud stack=================
-for manifest in mqtt_broker mqttforward pushgateway prometheus grafana grafana-image-renderer apiserver.yaml; do
+for manifest in nginx mqtt_broker mqttforward pushgateway prometheus grafana grafana-image-renderer apiserver; do
   wget -P /home/ubuntu https://raw.githubusercontent.com/anaireorg/anaire-cloud/main/stack/${manifest}.yaml
 done
 
@@ -101,6 +97,10 @@ sleep 2
 
 #Launch threshold updater process 
 ( echo "cat <<EOF" ; cat /home/ubuntu/apiserver.yaml; echo EOF ) | sh | kubectl --kubeconfig /home/ubuntu/.kube/config apply -f -
+sleep 2
+
+#Launch nginx 
+( echo "cat <<EOF" ; cat /home/ubuntu/nginx.yaml; echo EOF ) | sh | kubectl --kubeconfig /home/ubuntu/.kube/config apply -f -
 sleep 2
 #===========================================================
 
