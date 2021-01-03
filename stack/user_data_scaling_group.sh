@@ -14,7 +14,8 @@ export eip_id=eipalloc-XXXXXX
 #Stack Variables
 #---------------
 # - Grafana NodePort
-export PUBLIC_IP=$(aws ec2 describe-addresses --allocation-ids eipalloc-0d1c7cd65675b7770 --query 'Addresses[0].Tags' | jq '.[] | select(.Key=="dns") | .Value')
+apt update && apt install -y jq
+export PUBLIC_IP=$(aws ec2 describe-addresses --allocation-ids $eip_id --query 'Addresses[0].Tags' | jq '.[] | select(.Key=="dns") | .Value')
 export GRAFANA_NODEPORT_PORT=30300
 export GRAFANA_ADMIN_PASSWORD="your_password"
 #===========================================================
