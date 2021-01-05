@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mqttforward
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mqttforward
+  template:
+    metadata:
+      labels:
+        app: mqttforward
+    spec:
+      containers:
+        - name: mqttforward
+          image: python
+          command: ["/bin/bash"]
+          args: ["-c","/config/run.sh"]
+          volumeMounts:
+            - name: mqttforward
+              mountPath: /config/
+          resources:
+            {{- toYaml .Values.resources.mqttforward | nindent 12 }}
+      volumes:
+        - name: mqttforward
+          configMap:
+            name: mqttforward
+            defaultMode: 0777
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: mqttforward
+data:
+  run.sh: |
+    #!/bin/bash
+    pip install paho-mqtt
+    pip install requests
+    pip install pyyaml
+    while ((1))
+    do 
+      python /config/pushgateway_forwarder.py pushgateway-np mqtt-np
+      echo "ERROR: Script failed"
+    done
+    
+  pushgateway_forwarder.py: |
+    #!/usr/bin/env python
+    import sys
+    import requests
+    from paho.mqtt import client as mqtt
+    import yaml
+
+    HEADERS = {'X-Requested-With': 'Python requests', 'Content-type': 'text/xml'}
+
+
+    def pushdata(DATA, URL):
+      try:
+        #print(DATA)
+        response = requests.post(url=URL, data=DATA,headers=HEADERS)
+        print(response.content)
+      except requests.exceptions.RequestException as e:  # This is the correct syntax
+        raise SystemExit(e)
+
+    def on_connect(client, userdata, flags, rc):
+        # connect mqtt broker
+        client.subscribe([("measurement", 0)])
+        
+    def on_message(client, userdata, msg):
+        payload = msg.payload.decode("utf-8")
+        payload = yaml.safe_load(msg.payload.decode("utf-8"))
+
+        device_id = payload.pop('id', None)
+        if device_id:
+            msg = 'CO2 ' + str(payload.pop('CO2', 0)) + '\n' + \
+                  'Temperature ' + str(payload.pop('temperature', 0)) + '\n' + \
+                  'Humidity ' + str(payload.pop('humidity', 0)) + '\n'
+            URL  = 'http://' + sys.argv[1] + ':9091/metrics/job/' + str(device_id)
+            pushdata(msg, URL)
+        else:
+            print( 'ERROR: Malformed message' + str(payload))
+        
+
+    def main():
+      if (len(sys.argv) != 3):
+          print('Usage: '+sys.argv[0]+' <pushgateway IP> <mqttbroker IP>. Found '+len(sys.argv)+' arguments.')
+          exit()
+      
+      client = mqtt.Client()
+      client.connect(sys.argv[2], 1883)
+      client.on_connect = on_connect
+      client.on_message = on_message
+      client.loop_forever()
+
+    if __name__ == "__main__":
+        main()
+
+
+
