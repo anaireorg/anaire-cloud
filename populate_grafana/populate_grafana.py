@@ -288,8 +288,10 @@ def main():
         #Remove default permissions - COMMENTED TO ALLOW GUEST USER TO SEE ALL DASHBOARDS
         #grafana_api.folder.update_folder_permissions(folder_uid, {'items': []})
         #Add 'general' teams permissions
-        addTeamToFolder('general_viewer', folder_uid, 'Viewer')
-        addTeamToFolder('general_editor', folder_uid, 'Editor')
+        if 'viewer' in config:
+          addTeamToFolder('general_viewer', folder_uid, 'Viewer')
+        if 'editor' in config:
+          addTeamToFolder('general_editor', folder_uid, 'Editor')
         
         
         #Initialize folder dashboard json
