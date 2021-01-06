@@ -34,6 +34,7 @@ aws ec2 associate-address --allocation-id $eip_id --instance-id $instance_id
 sleep 2
 #Mount /data partition for persistent storage
 sudo bash -c 'echo "/dev/nvme1n1p1  /data  auto nosuid,nodev,nofail 0 0" >> /etc/fstab'
+sudo mkdir -p /data
 sudo mount -a
 #===========================================================
 
