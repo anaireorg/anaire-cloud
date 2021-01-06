@@ -28,6 +28,8 @@ spec:
             value: "http://${PUBLIC_IP}:${GRAFANA_NODEPORT_PORT}/"
           - name: GF_LOG_FILTERS
             value: rendering:debug
+          - name: GF_INSTALL_PLUGINS
+            value: "cloudspout-button-panel"
           args:
           volumeMounts:
             - name: grafana-storage-volume
