@@ -70,19 +70,18 @@ data:
             #index  index.html index.htm;
         }
 
-        location /live {
-            return 301 http://$host?kiosk;
+        location ~ ^/(panel|live|kiosk)  {
+            rewrite ^(.*)$ https://$host?kiosk break;
         }
 
-        location ~ /sensor {
-            rewrite /sensor/(.*)/(.*) http://$host/d/lastvalue?var-uid=$1&var-name=$2&kiosk  break;
-            rewrite /sensor/(.*) http://$host/d/lastvalue?var-uid=$1&kiosk  break;
+        location ~ ^/(sensor|device|dispositivo|medidor|view|unidad|unit) {
+            rewrite /(.*)/(.*)/(.*) https://$host/d/lastvalue?var-uid=$2&var-name=$3&kiosk  break;
+            rewrite /(.*)/(.*) https://$host/d/lastvalue?var-uid=$2&kiosk  break;
         }
 
-        location ~ /detalle {
-            rewrite /detalle/(.*)/(.*) http://$host/d/lastvalue?var-uid=$1&var-name=$2  break;
-            rewrite /detalle/(.*) http://$host/d/lastvalue?var-uid=$1  break;
-
+        location ~ ^/(admin|detalle|detail|edit|editor) {
+            rewrite /(.*)/(.*)/(.*) https://$host/d/lastvalue?var-uid=$2&var-name=$3  break;
+            rewrite /(.*)/(.*) https://$host/d/lastvalue?var-uid=$2  break;
         }
         
         #error_page  404              /404.html;
