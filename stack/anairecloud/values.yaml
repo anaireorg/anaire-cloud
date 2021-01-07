@@ -4,7 +4,11 @@
 
 #Your VM Public IPv4 address or Public IPv4 DNS
 publicIP: demo.anaire.org  
-  
+
+#If a secondary IPv4 or dns is used uncomment the following variable
+#secondaryPublicIP: demo.anaire.org
+
+
 #Your Grafana admin password
 grafanaAdminPass: yourgrafanaadminpassword
  

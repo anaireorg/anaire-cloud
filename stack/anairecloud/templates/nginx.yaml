@@ -99,7 +99,7 @@ data:
         listen  [::]:80;
         {{- end }}
 
-        server_name  {{ .Values.publicIP }};
+        server_name  {{ .Values.secondaryPublicIP }} {{ .Values.publicIP }};
 
         location / {
             proxy_pass http://grafana;
