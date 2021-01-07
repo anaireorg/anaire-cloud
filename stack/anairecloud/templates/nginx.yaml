@@ -73,7 +73,8 @@ metadata:
 data:
   run.sh: |
     apk add certbot certbot-nginx
-    echo "5 0 * * 6   root certbot renew >/dev/null 2>&1" >> /etc/crontabs/root
+    echo "5 0 * * 6 certbot renew >/dev/null 2>&1" >> /etc/crontabs/root
+    crond
     nginx -g 'daemon off;'
 ---
 kind: ConfigMap
