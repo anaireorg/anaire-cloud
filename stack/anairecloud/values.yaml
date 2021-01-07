@@ -7,7 +7,10 @@ publicIP: demo.anaire.org
   
 #Your Grafana admin password
 grafanaAdminPass: yourgrafanaadminpassword
-  
+ 
+#If there is a letsencrypt certificate prepared to be used by nginx in /data/letsencrypt set this var to true
+tls: false
+
 #Resorces for PODS. The idea is to be able to increase resources when running in a more powerful VM
 #These values are valid for a VM with 2CPU and 4GiB. Keep in mind these are the minimum requirements.
 resources: 

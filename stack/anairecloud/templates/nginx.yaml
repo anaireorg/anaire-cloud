@@ -15,9 +15,19 @@ spec:
       containers:
         - name: nginx
           image: nginx:1.19.6-alpine
+          {{- if eq .Values.tls true }}
+          command: ["sh"]
+          args: ["-c","/scripts/run.sh"]
+          {{- end }}
           volumeMounts:
             - name: confd
               mountPath: /etc/nginx/conf.d/
+            {{- if eq .Values.tls true }}
+            - name: letsencrypt-volume
+              mountPath: /etc/letsencrypt
+            - name: nginx-run
+              mountPath: /scripts
+            {{- end }}
           resources:
             {{- toYaml .Values.resources.nginx | nindent 12 }}
             requests:
@@ -41,11 +51,30 @@ spec:
           - /configmap/default.conf
           - /confd/default.conf
       volumes:
+        {{- if eq .Values.tls true }}
+        - name: letsencrypt-volume
+          hostPath:
+            path: /data/letsencrypt   
+        - name: nginx-run
+          configMap:
+            name: nginx-run
+            defaultMode: 0777
+        {{- end }}      
         - name: nginx-configmap
           configMap:
             name: nginx-configmap
         - name: confd
           emptyDir: {}
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: nginx-run
+data:
+  run.sh: |
+    apk add certbot certbot-nginx
+    #sleep infinity
+    nginx -g 'daemon off;'
 ---
 kind: ConfigMap
 apiVersion: v1
@@ -58,8 +87,18 @@ data:
     }
 
     server {
+        {{- if eq .Values.tls true }}
+        listen [::]:443 ssl ipv6only=on; # managed by Certbot
+        listen 443 ssl; # managed by Certbot
+        ssl_certificate /etc/letsencrypt/live/{{ .Values.publicIP }}/fullchain.pem; # managed by Certbot
+        ssl_certificate_key /etc/letsencrypt/live/{{ .Values.publicIP }}/privkey.pem; # managed by Certbot
+        include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+        ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+        {{- else }}
         listen       80;
         listen  [::]:80;
+        {{- end }}
+
         server_name  {{ .Values.publicIP }};
 
         location / {
@@ -93,3 +132,10 @@ data:
             root   /usr/share/nginx/html;
         }
     }
+    {{- if eq .Values.tls true }}
+    server {
+        if ($host = {{ .Values.publicIP }}) {
+            return 301 https://$host$request_uri;
+        } # managed by Certbot
+    }
+    {{- end }}
