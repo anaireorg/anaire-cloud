@@ -73,7 +73,7 @@ metadata:
 data:
   run.sh: |
     apk add certbot certbot-nginx
-    #sleep infinity
+    echo "5 0 * * 6   root certbot renew >/dev/null 2>&1" >> /etc/crontabs/root
     nginx -g 'daemon off;'
 ---
 kind: ConfigMap
@@ -137,5 +137,17 @@ data:
         if ($host = {{ .Values.publicIP }}) {
             return 301 https://$host$request_uri;
         } # managed by Certbot
+
+        {{- if .Values.secondaryPublicIP }}
+        if ($host = {{ .Values.secondaryPublicIP }}) {
+            return 301 https://$host$request_uri;
+        } # managed by Certbot
+        {{- end }}
+
+        listen [::]:80;
+        listen 80;
+
+        server_name  {{ .Values.secondaryPublicIP }} {{ .Values.publicIP }};
+        return 404; # managed by Certbot
     }
     {{- end }}
