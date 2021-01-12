@@ -58,7 +58,7 @@ data:
       python /config/api_server.py grafana-np:3000 "{{ .Values.grafanaAdminPass }}" mqtt-np:1883
       echo "ERROR: Script failed"
     done
-    
+
   api_server.py: |
     from bottle import route, run, request
     import json
@@ -157,6 +157,7 @@ data:
         area_dashboard = json.loads(requests.get(url=dashboard_url, headers=HEADERS).content)
         #Find the panel with the link to the dashboard with uid sensor_info['db_uid']
         panel = next(panel for panel in area_dashboard['dashboard']['panels'] if (panel['type'] == 'stat' and panel['links'][0]['url'].split('/')[4] == str(sensor_info['db_uid'])))
+        panel['title'] = sensor_info['name']
         #Update the caution thredshold
         panel['fieldConfig']['defaults']['thresholds']['steps'][2]['value'] = sensor_info['warning']
         panel['fieldConfig']['defaults']['thresholds']['steps'][3]['value'] = sensor_info['caution']
@@ -179,6 +180,14 @@ data:
         device_dashboard = json.loads(requests.get(url=dashboard_url, headers=HEADERS).content)
         #Update the caution and warning thredsholds
         #print(yaml.safe_dump(device_dashboard['dashboard']['panels'][0]))
+        device_dashboard['dashboard']['title'] = sensor_info['name']
+        url = device_dashboard['dashboard']['links'][0]['url'].split('/')[2]
+        device_dashboard['dashboard']['links'][0]['url'] = 'http://' + url + \
+          '/d/editor/editor?var-id=' + sensor_info['id'] + \
+          '&var-name=' + sensor_info['name'] + \
+          '&var-Warning=' + sensor_info['warning'] + \
+          '&var-Caution=' + sensor_info['caution']  + \
+          '&var-db_uid=' + sensor_info['db_uid'] + '&var-folderId=' +sensor_info['folderId']
         device_dashboard['dashboard']['panels'][0]['thresholds'][0]['value'] = int(sensor_info['warning'])
         device_dashboard['dashboard']['panels'][0]['thresholds'][1]['value'] = int(sensor_info['caution'])
         if 'alert'in device_dashboard['dashboard']['panels'][0]:
@@ -197,5 +206,3 @@ data:
 
     if __name__ == "__main__":
       main()
-
-
