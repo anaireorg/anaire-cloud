@@ -18,6 +18,7 @@ file = open('config.yaml')
 dashboard_config = yaml.safe_load(file.read())
 file.close()
 GRAFANA_URL=sys.argv[1]
+GRAFANA_IP=GRAFANA_URL.split(':')[0]
 password=sys.argv[2]
 users_passwords={}
 config_file=sys.argv[3]
@@ -237,8 +238,8 @@ def main():
         qr_dashboard_json = json.loads(qr_dashboard_template_json)
         qr_dashboard_json['tags'] = ['QR']
         qr_dashboard_json['uid'] = 'lastvalue'
-        qr_dashboard_json['links'][0]['url'] = 'http://' + GRAFANA_URL+'/d/detail?var-uid=$uid&var-name=$name'
-        qr_dashboard_json['links'][1]['url'] = 'http://' + GRAFANA_URL+'/d/editor/editor?var-id=$uid&var-Warning=700&var-Caution=1000&var-db_uid=$uid&var-name=$name'
+        qr_dashboard_json['links'][0]['url'] = 'http://' + GRAFANA_IP +'/d/detail?var-uid=$uid&var-name=$name'
+        qr_dashboard_json['links'][1]['url'] = 'http://' + GRAFANA_IP+'/d/editor/editor?var-id=$uid&var-Warning=700&var-Caution=1000&var-db_uid=$uid&var-name=$name'
         qr_dashboard = grafana_api.dashboard.update_dashboard({'dashboard': qr_dashboard_json})
         valid_ids.append(qr_dashboard['id'])
       else:
@@ -415,7 +416,7 @@ def main():
               'targetBlank': True,
               'title': 'Editor',
               'type': 'link',
-              'url': 'http://' + GRAFANA_URL + '/d/' + editor_uid + '/editor?var-id=' + str(dev_uid) + \
+              'url': 'http://' + GRAFANA_IP + '/d/' + editor_uid + '/editor?var-id=' + str(dev_uid) + \
                       '&var-name=' + str(dev_name) + \
                       '&var-Warning=' + str(dashboard_config['overview_dashboards']['thresholds']['warning']) + \
                       '&var-Caution=' + str(dashboard_config['overview_dashboards']['thresholds']['caution'])  + \
@@ -448,7 +449,7 @@ def main():
           valid_ids.append(device_dashboard['id'])
 
           #Create device CO2 panel
-          device_panel_url='http://' + GRAFANA_URL + '/d/' + device_dashboard['uid']
+          device_panel_url='http://' + GRAFANA_IP + '/d/' + device_dashboard['uid']
           device_panel_json = json.loads(device_panel_template_json)
           device_panel_json['type'] = panel_type
           device_panel_json['title'] = str(dev_name)
