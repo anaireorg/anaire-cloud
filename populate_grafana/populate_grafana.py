@@ -102,7 +102,7 @@ def get_folder(title):
 def createFolder(title):
   folder = get_folder(title)
   if not folder:
-    data = json.dumps(){
+    data = json.dumps({
         "uid": re.sub('[^A-Za-z0-9]+', '', title)+'folder',
         "title": title
     })
@@ -307,7 +307,7 @@ def main():
         folder_dashboard_json['dashboard']['uid'] = re.sub('[^A-Za-z0-9]+', '', folder['title'])
         folder_dashboard_json['folderId'] = folderId
 
-        #If general dashboard already exists in grafana reuse id
+        #If folder dashboard already exists in grafana reuse id
         folder_dashboard_url = 'http://' + GRAFANA_URL + '/api/search?type=dash-db&tag=area&query='+dashboard_config['messages'][language]['overview_dashboard']['title']
         folder_dashboard_list = json.loads(requests.get(url=folder_dashboard_url, headers=HEADERS).content)
         for dashboard in folder_dashboard_list:
@@ -315,6 +315,21 @@ def main():
               folder_dashboard_url = 'http://' + GRAFANA_URL + '/api/dashboards/uid/' + dashboard['uid']
               tmp = json.loads(requests.get(url=folder_dashboard_url, headers=HEADERS).content)
               folder_dashboard_json['dashboard']['id'] = tmp['dashboard']['id']
+
+        #Create area detailed dashboard
+        print("  Creating area detailed dashboard..." )
+        detail_json = json.loads(device_dashboard_template_json)
+        detail_json['dashboard']['title'] = dashboard_config['messages'][language]['detail_dashboard']['title']
+        detail_json['dashboard']['uid'] = re.sub('[^A-Za-z0-9]+', '', folder['title'])+'det'
+        detail_json['folderId'] = folderId
+
+        detail_json['dashboard']['panels'][0]['title'] = dashboard_config['messages'][language]['device_dashboard']['CO2']['title']
+        detail_json['dashboard']['panels'][1]['title'] = dashboard_config['messages'][language]['device_dashboard']['temperature']['title']
+        detail_json['dashboard']['panels'][2]['title'] = dashboard_config['messages'][language]['device_dashboard']['humidity']['title']
+
+        detail_json['dashboard']['panels'][0]['targets'] = []
+        detail_json['dashboard']['panels'][1]['targets'] = []
+        detail_json['dashboard']['panels'][2]['targets'] = []
 
         #Add all users listed as vierwer to the directory viewer team
         if ("viewer" in directory):
@@ -350,6 +365,11 @@ def main():
           dev_name = device["name"]
           dev_uid = device["uid"]
           print('  '+str(dev_name)+':')
+
+          #Add device to the area device dashboards
+          detail_json['dashboard']['panels'][0]['targets'].append({'expr': "CO2{exported_job=\""+str(dev_uid)+"\"}", 'legendFormat': dev_name})
+          detail_json['dashboard']['panels'][1]['targets'].append({'expr': "Temperature{exported_job=\""+str(dev_uid)+"\"}", 'legendFormat': dev_name})
+          detail_json['dashboard']['panels'][2]['targets'].append({'expr': "Humidity{exported_job=\""+str(dev_uid)+"\"}", 'legendFormat': dev_name})
 
           #Check if there is alredy a dashboard called <dev_name> in folder <folderId>
           existe = False
@@ -497,6 +517,11 @@ def main():
         print("  Creating \'"+dir_name+"\' dashboard..." )
         dashboard=grafana_api.dashboard.update_dashboard(folder_dashboard_json)
         valid_ids.append(dashboard['id'])
+
+        #Create detail dashboard for directory
+        print("  Creating \'"+dir_name+"\' detail dashboard..." )
+        detail_dashboard = grafana_api.dashboard.update_dashboard(detail_json)
+        valid_ids.append(detail_dashboard['id'])
 
       #Create general summay dashboard
       print("Creating \'"+config['name']+"\' dashboard..." )
