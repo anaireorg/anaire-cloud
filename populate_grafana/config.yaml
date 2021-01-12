@@ -8,7 +8,7 @@ overview_dashboards:
     panel_type: stat  #It can be [gauge, stat]
     thresholds:
         warning: 700
-        caution: 1000 
+        caution: 1000
 
 messages:
 
@@ -16,40 +16,40 @@ messages:
         device_dashboard:
             CO2:
                 title: 'CO2 ppm'
-                description: 
+                description:
                 - 'CO2 concentration in '
                 - ' measured by device '
             temperature:
                 title: 'Temperature ºC'
-                description: 
+                description:
                 - 'Temperature in '
                 - ' measured by device '
             humidity:
                 title: 'Humidity %'
-                description: 
+                description:
                 - 'Humidity in '
                 - ' measured by device '
         overview_dashboard:
-            title: 'Main Dashboard'
+            title: 'General'
             link: 'Go to '
 
     spanish:
-        device_dashboard: 
+        device_dashboard:
             CO2:
                 title: 'CO2 ppm'
-                description: 
+                description:
                 - 'Concentración de CO2 en '
                 - ' medido por el dispositivo '
             temperature:
                 title: 'Temperatura ºC'
-                description: 
+                description:
                 - 'Temperatura en '
                 - ' medida por el dispositivo '
             humidity:
                 title: 'Humedad %'
-                description: 
+                description:
                 - 'Humedad en '
                 - ' medida por el dispositivo '
         overview_dashboard:
-            title: 'Panel Principal'
+            title: 'General'
             link: 'Ir a '
