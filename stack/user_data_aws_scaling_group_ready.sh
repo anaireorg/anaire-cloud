@@ -15,15 +15,17 @@ export eip_id=eipalloc-XXXXXX
 #Stack Variables
 #---------------
 # - Grafana NodePort
+export GRAFANA_ADMIN_PASSWORD=yourpassword
+export PUBLIC_IP=ipordns
+#export SECONDARY_IP=useifneeded
+export TLS=false
+#===========================================================
+
+#==============Attach devices to instance===================
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 sudo ./aws/install
 sleep 5
-export PUBLIC_IP=$(aws ec2 describe-addresses --allocation-ids $eip_id --query 'Addresses[0].Tags' | jq '.[] | select(.Key=="dns") | .Value' | tr -d '"')
-export GRAFANA_ADMIN_PASSWORD="your_password"
-#===========================================================
-
-#==============Attach devices to instance===================
 #Get instance ID and attach to it the volume and the elastic IP
 instance_id=$(curl http://169.254.169.254/latest/meta-data/instance-id)
 echo "DEBUG:   instance_id: "$instance_id". Trying to attach volume"
@@ -40,9 +42,9 @@ sudo mount -a
 
 #==============Initialize /data if needed===================
 #Ensure there is a directory created for the applications persistent data
-for application in prometheus pushgateway grafana mosquitto
+for application in prometheus pushgateway grafana mosquitto letsencrypt
 do
-  if [ ! -d /data/$application ]; then 
+  if [ ! -d /data/$application ]; then
     sudo mkdir -p /data/$application
     sudo chown -R ubuntu:ubuntu /data/$application
     sudo chmod o+w /data/$application
@@ -64,5 +66,6 @@ echo "alias helm='microk8s.helm3'" >> /home/ubuntu/.bashrc
 #================Install anaire cloud stack=================
 cd /home/ubuntu/
 git clone https://github.com/anaireorg/anaire-cloud.git
-sudo microk8s.helm3 install --set publicIP=$PUBLIC_IP --set grafanaAdminPass=$GRAFANA_ADMIN_PASSWORD anairestack anaire-cloud/stack/anairecloud
+#sudo microk8s.helm3 install  --set tls=$TLS --set secondaryPublicIP=$SECONDARY_IP --set publicIP=$PUBLIC_IP --set grafanaAdminPass=$GRAFANA_ADMIN_PASSWORD anairestack anaire-cloud/stack/anairecloud
+sudo microk8s.helm3 install  --set tls=$TLS --set publicIP=$PUBLIC_IP --set grafanaAdminPass=$GRAFANA_ADMIN_PASSWORD anairestack anaire-cloud/stack/anairecloud
 #===========================================================
