@@ -448,7 +448,7 @@ def main():
           valid_ids.append(device_dashboard['id'])
 
           #Create device CO2 panel
-          device_panel_url='http://' + GRAFANA_URL + '/d/' + device_dashboard['uid'] + '/' + device_dashboard['title']
+          device_panel_url='http://' + GRAFANA_URL + '/d/' + device_dashboard['uid']
           device_panel_json = json.loads(device_panel_template_json)
           device_panel_json['type'] = panel_type
           device_panel_json['title'] = str(dev_name)
