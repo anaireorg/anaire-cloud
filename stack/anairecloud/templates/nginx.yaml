@@ -22,9 +22,9 @@ spec:
           volumeMounts:
             - name: confd
               mountPath: /etc/nginx/conf.d/
-            {{- if eq .Values.tls true }}
             - name: letsencrypt-volume
               mountPath: /etc/letsencrypt
+            {{- if eq .Values.tls true }}
             - name: nginx-run
               mountPath: /scripts
             {{- end }}
@@ -46,20 +46,20 @@ spec:
               mountPath: /confd
             - name: nginx-configmap
               mountPath: /configmap
-          command: 
+          command:
           - cp
           - /configmap/default.conf
           - /confd/default.conf
       volumes:
-        {{- if eq .Values.tls true }}
         - name: letsencrypt-volume
           hostPath:
-            path: /data/letsencrypt   
+            path: /data/letsencrypt
+        {{- if eq .Values.tls true }}
         - name: nginx-run
           configMap:
             name: nginx-run
             defaultMode: 0777
-        {{- end }}      
+        {{- end }}
         - name: nginx-configmap
           configMap:
             name: nginx-configmap
@@ -123,7 +123,7 @@ data:
             rewrite /(.*)/(.*)/(.*) https://$host/d/lastvalue?var-uid=$2&var-name=$3  break;
             rewrite /(.*)/(.*) https://$host/d/lastvalue?var-uid=$2  break;
         }
-        
+
         #error_page  404              /404.html;
 
         # redirect server error pages to the static page /50x.html
