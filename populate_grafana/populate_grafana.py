@@ -224,8 +224,25 @@ def main():
           addUserToTeam(user,'general_editor')
 
       #Create generic dashboards QR and detalle
-      createUpdateDashboard('QR.json', 'QR')
       createUpdateDashboard('detalle.json', 'detail')
+
+       #Create (if it does not extist) QR dashboard
+      qr_url = 'http://' + GRAFANA_URL + '/api/search?tag=QR'
+      qr_list = json.loads(requests.get(url=qr_url, headers=HEADERS).content)
+      if len(qr_list) == 0:
+        print('Create QR dashboard')
+        file = open('QR.json')
+        qr_dashboard_template_json = file.read()
+        file.close()
+        qr_dashboard_json = json.loads(qr_dashboard_template_json)
+        qr_dashboard_json['tags'] = ['QR']
+        qr_dashboard_json['uid'] = 'lastvalue'
+        qr_dashboard_json['links'][0]['url'] = 'http://' + GRAFANA_URL+'/d/detail?var-uid=$uid&var-name=$name'
+        qr_dashboard_json['links'][1]['url'] = 'http://' + GRAFANA_URL+'/d/editor/editor?var-id=$uid&var-Warning=700&var-Caution=1000&var-db_uid=$uid&var-name=$name'
+        qr_dashboard = grafana_api.dashboard.update_dashboard({'dashboard': qr_dashboard_json})
+        valid_ids.append(qr_dashboard['id'])
+      else:
+        valid_ids.append(qr_list[0]['id'])
 
       #Create (if it does not extist) dashboard to manage thredsholds
       editor_url = 'http://' + GRAFANA_URL + '/api/search?tag=editor'
@@ -234,6 +251,7 @@ def main():
         print('Create dashboard editor')
         editor_dashboard_json = json.loads(editor_dashboard_template_json)
         editor_dashboard_json['uid'] = 'editor'
+        editor_dashboard_json['panels'][0]['options']['url'] = 'http://' + GRAFANA_URL.split(':')[0]+':30880/update'
         editor_dashboard = grafana_api.dashboard.update_dashboard({'dashboard': editor_dashboard_json})
         valid_ids.append(editor_dashboard['id'])
       else:

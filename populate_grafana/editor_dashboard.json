@@ -61,7 +61,7 @@
         "password": "password",
         "text": "Update",
         "type": "query",
-        "url": "http://99.81.90.83:30880/update",
+        "url": "",
         "username": "user",
         "variant": "custom"
       },
