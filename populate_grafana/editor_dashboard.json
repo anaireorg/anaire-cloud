@@ -54,6 +54,10 @@
             "$update"
           ],
           [
+            "calibration",
+            "$Calibration"
+          ],
+          [
             "warning",
             "$Warning"
           ]
@@ -130,7 +134,7 @@
         },
         "error": null,
         "hide": 0,
-        "label": "Warning",
+        "label": "Warning Threshold",
         "name": "Warning",
         "options": [
           {
@@ -151,7 +155,7 @@
         },
         "error": null,
         "hide": 0,
-        "label": "Caution",
+        "label": "Alarm Threshold",
         "name": "Caution",
         "options": [
           {
@@ -174,9 +178,38 @@
         "error": null,
         "hide": 0,
         "includeAll": false,
-        "label": "Alarm",
+        "label": "Local Alarm",
         "multi": false,
         "name": "Alarm",
+        "options": [
+          {
+            "selected": true,
+            "text": "ON",
+            "value": "ON"
+          },
+          {
+            "selected": false,
+            "text": "OFF",
+            "value": "OFF"
+          }
+        ],
+        "query": "ON,OFF",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "ON",
+          "value": "ON"
+        },
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": "Calibration",
+        "multi": false,
+        "name": "Calibration",
         "options": [
           {
             "selected": true,
