@@ -239,7 +239,7 @@ def main():
         qr_dashboard_json['tags'] = ['QR']
         qr_dashboard_json['uid'] = 'lastvalue'
         qr_dashboard_json['links'][0]['url'] = 'http://' + GRAFANA_IP +'/d/detail?var-uid=$uid&var-name=$name'
-        qr_dashboard_json['links'][1]['url'] = 'http://' + GRAFANA_IP+'/d/editor/editor?var-id=$uid&var-Warning=700&var-Caution=1000&var-db_uid=$uid&var-name=$name&var-Alarm=ON&var-Calibration=OFF&var-update=OFF'
+        qr_dashboard_json['links'][1]['url'] = 'http://' + GRAFANA_URL +'/d/editor/editor?var-id=$uid&var-Warning=700&var-Caution=1000&var-db_uid=$uid&var-name=$name&var-Alarm=ON&var-Calibration=OFF&var-update=OFF'
         qr_dashboard = grafana_api.dashboard.update_dashboard({'dashboard': qr_dashboard_json})
         valid_ids.append(qr_dashboard['id'])
       else:
@@ -416,7 +416,7 @@ def main():
               'targetBlank': True,
               'title': 'Editor',
               'type': 'link',
-              'url': 'http://' + GRAFANA_IP + '/d/' + editor_uid + '/editor?var-id=' + str(dev_uid) + \
+              'url': 'http://' + GRAFANA_URL + '/d/' + editor_uid + '/editor?var-id=' + str(dev_uid) + \
                       '&var-name=' + str(dev_name) + \
                       '&var-Warning=' + str(dashboard_config['overview_dashboards']['thresholds']['warning']) + \
                       '&var-Caution=' + str(dashboard_config['overview_dashboards']['thresholds']['caution'])  + \
