@@ -53,6 +53,9 @@ data:
     pip install requests
     pip install pyyaml
     pip install bottle
+    pip install -U grafana_api
+    cd /root/
+    git clone https://github.com/anaireorg/anaire-cloud.git
     while ((1))
     do
       python /config/api_server.py grafana-np:3000 "{{ .Values.grafanaAdminPass }}" mqtt-np:1883
