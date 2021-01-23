@@ -203,7 +203,7 @@ data:
           '&var-db_uid=' + sensor_info['db_uid'] + \
           '&var-Alarm=' +sensor_info['alarm'] + \
           '&var-folderId=' +sensor_info['folderId'] + \
-          '&var-recalibration_value=' +sensor_info['recalibration_value'] + \
+          '&var-FRC_value=' +sensor_info['FRC_value'] + \
           '&var-MQTT_server=' +sensor_info['MQTT_server'] + \
           '&var-MQTT_port=' +sensor_info['MQTT_port'] + \
           '&var-temperature_offset=' +sensor_info['temperature_offset'] + \
