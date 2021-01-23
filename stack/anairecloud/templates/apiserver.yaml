@@ -133,7 +133,12 @@ data:
           'caution': update['caution'],
           'alarm': update['alarm'],
           'name': update['name'],
-          'update': update['update']
+          'update': update['update'],
+          'factory_reset': update['factory_reset'],
+          'recalibration': update['recalibration'],
+          'recalibration_value': update['recalibration_value'],
+          'MQTT_server': update['MQTT_server'],
+          'MQTT_port': update['MQTT_port']
         }
         client.publish("config/" + str(update['id']),json.dumps(data))
 
@@ -190,7 +195,12 @@ data:
           '&var-name=' + sensor_info['name'] + \
           '&var-Warning=' + sensor_info['warning'] + \
           '&var-Caution=' + sensor_info['caution']  + \
-          '&var-db_uid=' + sensor_info['db_uid'] + '&var-folderId=' +sensor_info['folderId']
+          '&var-db_uid=' + sensor_info['db_uid'] + \
+          '&var-folderId=' +sensor_info['folderId'] + \
+          '&var-recalibration_value=' +sensor_info['recalibration_value'] + \
+          '&var-MQTT_server=' +sensor_info['MQTT_server'] + \
+          '&var-MQTT_port=' +sensor_info['MQTT_port']
+
         device_dashboard['dashboard']['panels'][0]['thresholds'][0]['value'] = int(sensor_info['warning'])
         device_dashboard['dashboard']['panels'][0]['thresholds'][1]['value'] = int(sensor_info['caution'])
         if 'alert'in device_dashboard['dashboard']['panels'][0]:
