@@ -240,7 +240,7 @@ def main():
         qr_dashboard_json['uid'] = 'lastvalue'
         qr_dashboard_json['links'][0]['url'] = 'http://' + GRAFANA_IP +'/d/detail?var-uid=$uid&var-name=$name'
         qr_dashboard_json['links'][1]['url'] = 'http://' + GRAFANA_URL + \
-        '/d/editor/editor?var-id=$uid&var-Warning=700&var-Caution=1000' \ +
+        '/d/editor/editor?var-id=$uid&var-Warning=700&var-Caution=1000' + \
         '&var-db_uid=$uid&var-name=$name&var-Alarm=enabled' + \
         '&var-recalibration=OFF&var-update=disabled&var-factory_reset=disabled' + \
         '&var-MQTT_server=' + GRAFANA_IP
