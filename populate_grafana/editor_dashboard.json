@@ -61,12 +61,12 @@
             "factory_reset",
             "$factory_reset"
           ],          [
-            "recalibration",
-            "$recalibration"
+            "FRC",
+            "$FRC"
           ],
           [
-            "recalibration_value",
-            "$recalibration_value"
+            "FRC_value",
+            "$FRC_value"
           ],
           [
             "MQTT_server",
@@ -75,6 +75,22 @@
           [
             "MQTT_port",
             "$MQTT_port"
+          ],
+          [
+            "ABC",
+            "$ABC"
+          ],
+          [
+            "reboot",
+            "$reboot"
+          ],
+          [
+            "temperature_offset",
+            "$temperature_offset"
+          ],
+          [
+            "altitude_compensation",
+            "$altitude_compensation"
           ]
         ],
         "password": "password",
@@ -199,18 +215,60 @@
         "options": [
           {
             "selected": true,
-            "text": "enabled",
-            "value": "enabled"
+            "text": "ON",
+            "value": "ON"
           },
           {
             "selected": false,
-            "text": "disabled",
-            "value": "disabled"
+            "text": "OFF",
+            "value": "OFF"
           }
         ],
-        "query": "enabled,disabled",
+        "query": "ON,OFF",
         "skipUrlSync": false,
         "type": "custom"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "0",
+          "value": "0"
+        },
+        "error": null,
+        "hide": 0,
+        "label": "Temperature Offset",
+        "name": "temperature_offset",
+        "options": [
+          {
+            "selected": true,
+            "text": "0",
+            "value": "0"
+          }
+        ],
+        "query": "0",
+        "skipUrlSync": false,
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "0",
+          "value": "0"
+        },
+        "error": null,
+        "hide": 0,
+        "label": "Altitude Compensation",
+        "name": "altitude_compensation",
+        "options": [
+          {
+            "selected": true,
+            "text": "0",
+            "value": "0"
+          }
+        ],
+        "query": "0",
+        "skipUrlSync": false,
+        "type": "textbox"
       },
       {
         "allValue": null,
@@ -224,7 +282,7 @@
         "includeAll": false,
         "label": "Perform Forced Recalibration",
         "multi": false,
-        "name": "recalibration",
+        "name": "FRC",
         "options": [
           {
             "selected": true,
@@ -250,7 +308,7 @@
         "error": null,
         "hide": 0,
         "label": "Forced Recalibration Value",
-        "name": "recalibration_value",
+        "name": "FRC_value",
         "options": [
           {
             "selected": true,
@@ -266,8 +324,37 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "disabled",
-          "value": "disabled"
+          "text": "OFF",
+          "value": "OFF"
+        },
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": "Auto Baseline Correction (ABC)",
+        "multi": false,
+        "name": "ABC",
+        "options": [
+          {
+            "selected": true,
+            "text": "OFF",
+            "value": "OFF"
+          },
+          {
+            "selected": false,
+            "text": "ON",
+            "value": "ON"
+          }
+        ],
+        "query": "OFF,ON",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "OFF",
+          "value": "OFF"
         },
         "error": null,
         "hide": 0,
@@ -278,16 +365,16 @@
         "options": [
           {
             "selected": true,
-            "text": "disabled",
-            "value": "disabled"
+            "text": "OFF",
+            "value": "OFF"
           },
           {
             "selected": false,
-            "text": "enabled",
-            "value": "enabled"
+            "text": "ON",
+            "value": "ON"
           }
         ],
-        "query": "disabled,enabled",
+        "query": "OFF,ON",
         "skipUrlSync": false,
         "type": "custom"
       },
@@ -295,28 +382,57 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "disabled",
-          "value": "disabled"
+          "text": "OFF",
+          "value": "OFF"
         },
         "error": null,
         "hide": 0,
         "includeAll": false,
-        "label": "factory_reset",
+        "label": "Reboot",
+        "multi": false,
+        "name": "reboot",
+        "options": [
+          {
+            "selected": true,
+            "text": "OFF",
+            "value": "OFF"
+          },
+          {
+            "selected": false,
+            "text": "ON",
+            "value": "ON"
+          }
+        ],
+        "query": "OFF,ON",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "OFF",
+          "value": "OFF"
+        },
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": "Factory Reset",
         "multi": false,
         "name": "factory_reset",
         "options": [
           {
             "selected": true,
-            "text": "disabled",
-            "value": "disabled"
+            "text": "OFF",
+            "value": "OFF"
           },
           {
             "selected": false,
-            "text": "enabled",
-            "value": "enabled"
+            "text": "ON",
+            "value": "ON"
           }
         ],
-        "query": "disabled,enabled",
+        "query": "OFF,ON",
         "skipUrlSync": false,
         "type": "custom"
       },

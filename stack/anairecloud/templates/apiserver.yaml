@@ -139,7 +139,11 @@ data:
           'recalibration': update['recalibration'],
           'recalibration_value': update['recalibration_value'],
           'MQTT_server': update['MQTT_server'],
-          'MQTT_port': update['MQTT_port']
+          'MQTT_port': update['MQTT_port'],
+          'ABC': update['ABC']
+          'reboot': update['reboot']
+          'temperature_offset': update['temperature_offset']
+          'altitude_compensation': update['altitude_compensation']
         }
         client.publish("config/" + str(update['id']),json.dumps(data))
 
@@ -197,10 +201,18 @@ data:
           '&var-Warning=' + sensor_info['warning'] + \
           '&var-Caution=' + sensor_info['caution']  + \
           '&var-db_uid=' + sensor_info['db_uid'] + \
+          '&var-Alarm=' +sensor_info['alarm'] + \
           '&var-folderId=' +sensor_info['folderId'] + \
           '&var-recalibration_value=' +sensor_info['recalibration_value'] + \
           '&var-MQTT_server=' +sensor_info['MQTT_server'] + \
-          '&var-MQTT_port=' +sensor_info['MQTT_port']
+          '&var-MQTT_port=' +sensor_info['MQTT_port'] + \
+          '&var-temperature_offset=' +sensor_info['temperature_offset'] + \
+          '&var-altitude_compensation=' +sensor_info['altitude_compensation'] + \
+          '&var-reboot=OFF' + \
+          '&var-factory_reset=OFF' + \
+          '&var-update=OFF' + \
+          '&var-ABC=OFF' + \
+          '&var-FRC=OFF'
 
         device_dashboard['dashboard']['panels'][0]['thresholds'][0]['value'] = int(sensor_info['warning'])
         device_dashboard['dashboard']['panels'][0]['thresholds'][1]['value'] = int(sensor_info['caution'])

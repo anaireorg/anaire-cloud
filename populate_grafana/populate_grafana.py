@@ -242,8 +242,9 @@ def main():
         qr_dashboard_json['links'][0]['url'] = 'http://' + GRAFANA_IP +'/d/detail?var-uid=$uid&var-name=$name'
         qr_dashboard_json['links'][1]['url'] = 'http://' + GRAFANA_URL + \
         '/d/editor/editor?var-id=$uid&var-Warning=700&var-Caution=1000' + \
-        '&var-db_uid=$uid&var-name=$name&var-Alarm=enabled' + \
-        '&var-recalibration=OFF&var-update=disabled&var-factory_reset=disabled' + \
+        '&var-db_uid=$uid&var-name=$name&var-Alarm=ON' + \
+        '&var-FRC=OFF&var-update=OFF&var-factory_reset=OFF' + \
+        '&var-ABC=OFF&var-reboot=OFF' + \
         '&var-MQTT_server=' + GRAFANA_IP
 
         qr_dashboard = grafana_api.dashboard.update_dashboard({'dashboard': qr_dashboard_json})
@@ -427,8 +428,9 @@ def main():
                       '&var-Warning=' + str(dashboard_config['overview_dashboards']['thresholds']['warning']) + \
                       '&var-Caution=' + str(dashboard_config['overview_dashboards']['thresholds']['caution'])  + \
                       '&var-db_uid=' + str(dev_uid) + '&var-folderId=' + str(folderId) + \
-                      '&var-Alarm=enabled&var-recalibration=OFF&var-update=disabled' + \
-                      '&var-factory_reset=disabled&var-MQTT_server=' + GRAFANA_IP
+                      '&var-Alarm=ON&var-FRC=OFF&var-update=OFF' + \
+                      '&var-ABC=OFF&var-reboot=OFF' + \
+                      '&var-factory_reset=OFF&var-MQTT_server=' + GRAFANA_IP
             }]
             dashboard_json['dashboard']['panels'][0]['title'] = dashboard_config['messages'][language]['device_dashboard']['CO2']['title']
             dashboard_json['dashboard']['panels'][0]['description'] = dashboard_config['messages'][language]['device_dashboard']['CO2']['description'][0] + str(dev_name) + \
