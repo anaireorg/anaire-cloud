@@ -54,12 +54,27 @@
             "$update"
           ],
           [
-            "calibration",
-            "$Calibration"
-          ],
-          [
             "warning",
             "$Warning"
+          ],
+          [
+            "factory_reset",
+            "$factory_reset"
+          ],          [
+            "recalibration",
+            "$recalibration"
+          ],
+          [
+            "recalibration_value",
+            "$recalibration_value"
+          ],
+          [
+            "MQTT_server",
+            "$MQTT_server"
+          ],
+          [
+            "MQTT_port",
+            "$MQTT_port"
           ]
         ],
         "password": "password",
@@ -134,7 +149,7 @@
         },
         "error": null,
         "hide": 0,
-        "label": "Warning Threshold",
+        "label": "Warning Threshold Value",
         "name": "Warning",
         "options": [
           {
@@ -155,7 +170,7 @@
         },
         "error": null,
         "hide": 0,
-        "label": "Alarm Threshold",
+        "label": "Alarm Threshold Value",
         "name": "Caution",
         "options": [
           {
@@ -178,51 +193,22 @@
         "error": null,
         "hide": 0,
         "includeAll": false,
-        "label": "Local Alarm",
+        "label": "Sound Alarm",
         "multi": false,
         "name": "Alarm",
         "options": [
           {
             "selected": true,
-            "text": "ON",
-            "value": "ON"
+            "text": "enabled",
+            "value": "enabled"
           },
           {
             "selected": false,
-            "text": "OFF",
-            "value": "OFF"
+            "text": "disabled",
+            "value": "disabled"
           }
         ],
-        "query": "ON,OFF",
-        "skipUrlSync": false,
-        "type": "custom"
-      },
-      {
-        "allValue": null,
-        "current": {
-          "selected": false,
-          "text": "ON",
-          "value": "ON"
-        },
-        "error": null,
-        "hide": 0,
-        "includeAll": false,
-        "label": "Calibration",
-        "multi": false,
-        "name": "Calibration",
-        "options": [
-          {
-            "selected": true,
-            "text": "ON",
-            "value": "ON"
-          },
-          {
-            "selected": false,
-            "text": "OFF",
-            "value": "OFF"
-          }
-        ],
-        "query": "ON,OFF",
+        "query": "enabled,disabled",
         "skipUrlSync": false,
         "type": "custom"
       },
@@ -236,9 +222,9 @@
         "error": null,
         "hide": 0,
         "includeAll": false,
-        "label": "Last version",
+        "label": "Perform Forced Recalibration",
         "multi": false,
-        "name": "update",
+        "name": "recalibration",
         "options": [
           {
             "selected": true,
@@ -254,6 +240,127 @@
         "query": "OFF,ON",
         "skipUrlSync": false,
         "type": "custom"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "400",
+          "value": "400"
+        },
+        "error": null,
+        "hide": 0,
+        "label": "Forced Recalibration Value",
+        "name": "recalibration_value",
+        "options": [
+          {
+            "selected": true,
+            "text": "400",
+            "value": "400"
+          }
+        ],
+        "query": "400",
+        "skipUrlSync": false,
+        "type": "textbox"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "disabled",
+          "value": "disabled"
+        },
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": "Update to Last Version",
+        "multi": false,
+        "name": "update",
+        "options": [
+          {
+            "selected": true,
+            "text": "disabled",
+            "value": "disabled"
+          },
+          {
+            "selected": false,
+            "text": "enabled",
+            "value": "enabled"
+          }
+        ],
+        "query": "disabled,enabled",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "disabled",
+          "value": "disabled"
+        },
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": "factory_reset",
+        "multi": false,
+        "name": "factory_reset",
+        "options": [
+          {
+            "selected": true,
+            "text": "disabled",
+            "value": "disabled"
+          },
+          {
+            "selected": false,
+            "text": "enabled",
+            "value": "enabled"
+          }
+        ],
+        "query": "disabled,enabled",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "portal.anaire.org",
+          "value": "portal.anaire.org"
+        },
+        "error": null,
+        "hide": 0,
+        "label": "MQTT_server",
+        "name": "MQTT_server",
+        "options": [
+          {
+            "selected": true,
+            "text": "portal.anaire.org",
+            "value": "portal.anaire.org"
+          }
+        ],
+        "query": "portal.anaire.org",
+        "skipUrlSync": false,
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "30183",
+          "value": "30183"
+        },
+        "error": null,
+        "hide": 0,
+        "label": "MQTT_port",
+        "name": "MQTT_port",
+        "options": [
+          {
+            "selected": true,
+            "text": "30183",
+            "value": "30183"
+          }
+        ],
+        "query": "30183",
+        "skipUrlSync": false,
+        "type": "textbox"
       },
       {
         "current": {
