@@ -140,9 +140,9 @@ data:
           'recalibration_value': update['recalibration_value'],
           'MQTT_server': update['MQTT_server'],
           'MQTT_port': update['MQTT_port'],
-          'ABC': update['ABC']
-          'reboot': update['reboot']
-          'temperature_offset': update['temperature_offset']
+          'ABC': update['ABC'],
+          'reboot': update['reboot'],
+          'temperature_offset': update['temperature_offset'],
           'altitude_compensation': update['altitude_compensation']
         }
         client.publish("config/" + str(update['id']),json.dumps(data))
