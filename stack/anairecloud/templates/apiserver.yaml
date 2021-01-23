@@ -53,6 +53,7 @@ data:
     pip install requests
     pip install pyyaml
     pip install bottle
+    pip install unidecode
     pip install -U grafana_api
     cd /root/
     git clone https://github.com/anaireorg/anaire-cloud.git

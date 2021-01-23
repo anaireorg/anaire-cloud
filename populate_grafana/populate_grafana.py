@@ -104,7 +104,7 @@ def createFolder(title):
   folder = get_folder(title)
   if not folder:
     data = json.dumps({
-        "uid": re.sub('[^A-Za-z0-9]+', '', title)+'folder',
+        "uid": re.sub('[^A-Za-z0-9]+', '', unidecode.unidecode(title)).lower()+'folder',
         "title": title
     })
     url = 'http://' + GRAFANA_URL + '/api/folders'
@@ -328,7 +328,7 @@ def main():
         folder_dashboard_json = json.loads(folder_dashboard_template_json)
         folder_dashboard_json['dashboard']['title'] = dashboard_config['messages'][language]['overview_dashboard']['title']
         folder_dashboard_json['dashboard']['tags'] = [ 'area' ]
-        folder_dashboard_json['dashboard']['uid'] = re.sub('[^A-Za-z0-9]+', '', folder['title'])
+        folder_dashboard_json['dashboard']['uid'] = re.sub('[^A-Za-z0-9]+', '', unidecode.unidecode(folder['title'])).lower()
         folder_dashboard_json['folderId'] = folderId
 
         #If folder dashboard already exists in grafana reuse id
@@ -344,7 +344,7 @@ def main():
         print("  Creating area detailed dashboard..." )
         detail_json = json.loads(device_dashboard_template_json)
         detail_json['dashboard']['title'] = dashboard_config['messages'][language]['detail_dashboard']['title']
-        detail_json['dashboard']['uid'] = re.sub('[^A-Za-z0-9]+', '', folder['title'])+'det'
+        detail_json['dashboard']['uid'] = re.sub('[^A-Za-z0-9]+', '', unidecode.unidecode(folder['title'])).lower()+'det'
         detail_json['folderId'] = folderId
 
         detail_json['dashboard']['panels'][0]['title'] = dashboard_config['messages'][language]['device_dashboard']['CO2']['title']
