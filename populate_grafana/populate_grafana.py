@@ -392,7 +392,7 @@ def main():
         #Iterate through all devices
         cont = 0
         for device in directory["device"]:
-          dev_name = device["name"]
+          dev_name = str(device["name"])
           dev_uid = device["uid"]
           print('  '+str(dev_name)+':')
 
