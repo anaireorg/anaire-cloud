@@ -397,9 +397,9 @@ def main():
           print('  '+str(dev_name)+':')
 
           #Add device to the area device dashboards
-          detail_json['dashboard']['panels'][0]['targets'].append({'expr': "CO2{exported_job=\""+str(dev_uid)+"\"}", 'legendFormat': dev_name})
-          detail_json['dashboard']['panels'][1]['targets'].append({'expr': "Temperature{exported_job=\""+str(dev_uid)+"\"}", 'legendFormat': dev_name})
-          detail_json['dashboard']['panels'][2]['targets'].append({'expr': "Humidity{exported_job=\""+str(dev_uid)+"\"}", 'legendFormat': dev_name})
+          detail_json['dashboard']['panels'][0]['targets'].append({'expr': "CO2{exported_job=\""+str(dev_uid)+"\"}", 'legendFormat': dev_name, 'refId': dev_name})
+          detail_json['dashboard']['panels'][1]['targets'].append({'expr': "Temperature{exported_job=\""+str(dev_uid)+"\"}", 'legendFormat': dev_name, 'refId': dev_name})
+          detail_json['dashboard']['panels'][2]['targets'].append({'expr': "Humidity{exported_job=\""+str(dev_uid)+"\"}", 'legendFormat': dev_name, 'refId': dev_name})
 
           #Check if there is alredy a dashboard called <dev_name> in folder <folderId>
           existe = False
