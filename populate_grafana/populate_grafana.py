@@ -353,6 +353,10 @@ def main():
         detail_json['dashboard']['panels'][1]['title'] = dashboard_config['messages'][language]['device_dashboard']['temperature']['title']
         detail_json['dashboard']['panels'][2]['title'] = dashboard_config['messages'][language]['device_dashboard']['humidity']['title']
 
+        detail_json['dashboard']['panels'][0]['fill'] = 0
+        detail_json['dashboard']['panels'][1]['fill'] = 0
+        detail_json['dashboard']['panels'][2]['fill'] = 0
+
         detail_json['dashboard']['panels'][0]['targets'] = []
         detail_json['dashboard']['panels'][1]['targets'] = []
         detail_json['dashboard']['panels'][2]['targets'] = []
