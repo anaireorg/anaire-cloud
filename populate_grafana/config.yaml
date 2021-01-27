@@ -2,7 +2,7 @@ language: spanish
 username: admin
 
 overview_dashboards:
-    num_panel_per_row: 1
+    num_panel_per_row: 2
     panel_height: 2
     panel_weight: 10
     panel_type: stat  #It can be [gauge, stat]
