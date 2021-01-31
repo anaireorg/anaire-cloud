@@ -40,7 +40,7 @@
         "mode": "absolute",
         "steps": [
           {
-            "color": "rgb(0, 0, 0)",
+            "color": "rgba(247, 242, 242, 0.76)",
             "value": null
           },
           {
