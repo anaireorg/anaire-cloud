@@ -120,7 +120,6 @@ Apunta tanto la 'Dirección IPv4 asignada' como el 'ID de asignnación'. La prim
 2. Pulsa el botón 'Crear grupo de seguridad'
 3. Rellena un nombre y una descripción. En VPC te aparecerá la PVC por defecto, a menos que estés usando una cuenta AWS en la que hayas creado VPCs adicionales y quieras usar una de estas no lo toques.
 4. Añade las siguientes reglas de entrada:
-**TODO: actualizar reglas**
 ![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/security_group_1.jpg)
 NOTA: Sólo estamos permitiendo comunicación con el puerto que usará el broker MQTT y con el puerto que usaremos para consultar Grafana. No estamos permitiendo SSH pues eso haría nuestra máquina más vulnerable. Si fuese necesario hacer troubleshooting se habilitaría el SSH sólo desde la IP que estemos usando (esto estará descrito más adelante en una sección de troubleshooting).
 5. Mantén las reglas de salida como están (permitiendo todo el tráfico).
@@ -134,7 +133,15 @@ NOTA: Sólo estamos permitiendo comunicación con el puerto que usará el broker
 5. Pulsa 'Crear par de claves'. Al hacerlo se descargará automáticamente tu clave privada. Guárdala en lugar seguro porque será la forma de acceder a tu máquina virtual.
 
 ## Crear un rol IAM
-**TODO: Añadir instrucciones para crear Rol IAM**
+1. En la barra de búsqueda de servicios busca IAM y accede a este servicio.
+2. Pulsa en la columna 'Roles'
+![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/roles_1.jpg)
+3. Selecciona caso de uso "EC2" y pulsa siguientes
+![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/roles_2.jpg)
+4. Busca y selecciona la política "AmazonEC2FullAccess" y pulsa siguiente.
+![image](https://github.com/anaireorg/anaire-cloud/raw/main/screenshots/roles_3.jpg)
+5. El uso de etiquetas es opcional. Indica alguna si lo consideras necesario y pulsa siguiente.
+6. Indica un nombre de rol descriptivo, como por ejemplo "AmazonEC2FullAccess" y pulsa "Crear un rol"
 
 En este punto tenemos:
 * Un volumen preparado para almacenar los datos de nuestras aplicaciones
@@ -148,11 +155,11 @@ En este punto tenemos:
 2. Pulsa el botón 'Crear plantilla de lanzamiento'.
 3. Da un nombre a la plantilla.
 4. Selecciona como 'Imagen de Amazon Machine (AMI)' la imagen Ubuntu Minimal 20.04
-5. Selecciona t3a.medium como 'Tipo de instancia'
+5. Selecciona t3a.medium como 'Tipo de instancia'. Si se usa un tamaño menor será necesaro ajustar el las variables de la helm chart puesto que está ajustado para una máquina de 2CPU y 4GiB.
 6. Selecciona el par de claves que creamos anteriormente
-**TODO: Indicar que se quiere usar el ROL IAM que definimos anteriormente**
 7. Abre el desplegable 'Detalles avanzados'
-8. Desplázate hasta el final de la página donde se encuentra la caja 'Datos de usuario'
+8. En "Perfil de instancia de IAM" seleccional el rol IAM que hemos creado anteriormente
+9. Desplázate hasta el final de la página donde se encuentra la caja 'Datos de usuario'
 En esta caja tienes que copiar el contenido del [userdata preparado en nuestro github](https://github.com/anaireorg/anaire-cloud/blob/main/stack/user_data_aws_scaling_group_ready.sh). Actualiza las variables de las secciones 'AWS variables' y 'Stack Variables' antes de crear el template.
 
 ## Crear Scaling Group
@@ -161,9 +168,9 @@ Ahora crearemos un scaling group que contendrá una sola VM. Este se basará en 
 1. En el menú laterar de EC2, ve a 'Grupos de Auto Scaling' dentro de la sección 'Auto Scaling'.
 2. Pulsa el botón Crear grupo de Auto Scaling
 3. Elige nombre y selecciona la plantilla que hemos creado. Pulsa siguiente.
-**TODO: Indicar que se quiere que el scaling group tenga minimo 1, máximo 1 y actual 1**
 4. En la sección 'Red', en el apartado 'Subredes' selecciona únicamente la subred correspondiente a la Availability Zone en la que creaste el volumen anteriormente.
-5. Pulsa siguiente dejando los parámetros por defecto hasta que llegues a la pantalla 'Revisar'.
+5. Pulsa siguiente dejando los parámetros por defecto hasta que llegues a la pantalla 'Configurar políticas de escalado y tamaño de grupo', en donde debes asegurarte de que en la sección "Tamaño del grupo" están puesto a 1 los parámetros "Capacidad deseada", "Capacidad mínima" y "Capacidad máxima".
+6. Continua pulsando siguiente hasta llegar a la pantalla "Revisar"
 6. Pulsa el botón 'Crear grupo de Auto Scaling'
 
 # ¿Por qué lo hacemos así?
