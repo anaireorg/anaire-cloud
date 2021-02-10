@@ -30,6 +30,21 @@ spec:
             value: rendering:debug
           - name: GF_INSTALL_PLUGINS
             value: "cloudspout-button-panel"
+          {{- if eq .Values.smtp_enabled true }}
+          - name: GF_SMTP_ENABLED
+            value: "{{ .Values.smtp_enabled }}"
+          - name: GF_SMTP_HOST
+            value: "{{ .Values.smtp_host }}"
+          - name: GF_SMTP_USER
+            value: "{{ .Values.smtp_user }}"
+          - name: GF_SMTP_PASSWORD
+            value: "{{ .Values.smtp_pass }}"
+          - name: GF_SMTP_FROM_ADDRESS
+            value: "{{ .Values.smtp_user }}"
+          - name: GF_SMTP_FROM_NAME
+            value: "{{ .Values.smtp_from }}"
+          {{- end }}
+
           args:
           volumeMounts:
             - name: grafana-storage-volume

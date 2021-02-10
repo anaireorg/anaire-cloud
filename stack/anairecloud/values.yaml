@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 #Your VM Public IPv4 address or Public IPv4 DNS
-publicIP: demo.anaire.org  
+publicIP: demo.anaire.org
 
 #If a secondary IPv4 or dns is used uncomment the following variable
 #secondaryPublicIP: demo.anaire.org
@@ -11,13 +11,19 @@ publicIP: demo.anaire.org
 
 #Your Grafana admin password
 grafanaAdminPass: yourgrafanaadminpassword
- 
+
 #If there is a letsencrypt certificate prepared to be used by nginx in /data/letsencrypt set this var to true
 tls: false
 
+smtp_enabled: false
+smtp_host: smtp.example.com:587
+smtp_user: myuser@example.com
+smtp_pass: yourmailpassword
+smtp_from: your sender name
+
 #Resorces for PODS. The idea is to be able to increase resources when running in a more powerful VM
 #These values are valid for a VM with 2CPU and 4GiB. Keep in mind these are the minimum requirements.
-resources: 
+resources:
   mqttbroker:
     requests:
       memory: "50Mi"
