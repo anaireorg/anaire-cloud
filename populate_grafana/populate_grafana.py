@@ -459,7 +459,11 @@ def main():
             device_dashboard = json.loads(requests.get(url=sensor_dashboard_url, headers=HEADERS).content)['dashboard']
 
           warning = device_dashboard['panels'][0]['thresholds'][0]['value']
-          caution = device_dashboard['panels'][0]['thresholds'][1]['value']
+          #If alarm is declared in the device only one threshold appears, that is the one defined ty the alarm.
+          if len(device_dashboard['panels'][0]['thresholds'][0]) > 1:
+            caution = device_dashboard['panels'][0]['thresholds'][1]['value']
+          else
+            caution = dashboard_config['overview_dashboards']['thresholds']['caution']
           valid_ids.append(device_dashboard['id'])
 
           #Create device CO2 panel
