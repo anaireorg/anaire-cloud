@@ -460,7 +460,7 @@ def main():
 
           warning = device_dashboard['panels'][0]['thresholds'][0]['value']
           #If alarm is declared in the device only one threshold appears, that is the one defined ty the alarm.
-          if len(device_dashboard['panels'][0]['thresholds'][0]) > 1:
+          if len(device_dashboard['panels'][0]['thresholds']) > 1:
             caution = device_dashboard['panels'][0]['thresholds'][1]['value']
           else:
             caution = dashboard_config['overview_dashboards']['thresholds']['caution']
