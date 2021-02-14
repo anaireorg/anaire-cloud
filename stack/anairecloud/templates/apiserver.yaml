@@ -176,6 +176,8 @@ data:
           panel['fieldConfig']['defaults']['thresholds']['steps'][2]['value'] = sensor_info['warning']
           panel['fieldConfig']['defaults']['thresholds']['steps'][3]['value'] = sensor_info['caution']
           area_dashboard['folderId'] = area_dashboard['meta']['folderId']
+          panel['links'][0]['title'] = 'Ir a '+str(sensor_info['name'])
+          panel['fieldConfig']['defaults']['links'][0]['title'] = 'Ir a '+str(sensor_info['name'])
 
           #Update the dashboard
           response = post('http://' + GRAFANA_URL + '/api/dashboards/db', json.dumps(area_dashboard),HEADERS)
