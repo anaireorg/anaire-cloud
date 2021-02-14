@@ -221,6 +221,7 @@ data:
         #represent the threshold that triggers the alarm with 'critical' color
         if 'alert'in device_dashboard['dashboard']['panels'][0]:
           device_dashboard['dashboard']['panels'][0]['alert']['conditions'][0]['evaluator']['params'][0] = int(sensor_info['warning'])
+          device_dashboard['dashboard']['panels'][0]['alert']['message'] = sensor_info['name']
         else:
           device_dashboard['dashboard']['panels'][0]['thresholds'][1]['value'] = int(sensor_info['caution'])
         device_dashboard['dashboard']['panels'][0]['thresholds'][0]['value'] = int(sensor_info['warning'])
