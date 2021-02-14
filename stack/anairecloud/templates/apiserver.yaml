@@ -185,41 +185,41 @@ data:
       except requests.exceptions.RequestException as e:
         raise SystemExit(e)
 
-        def update_detail_dashboard(sensor_info, dashboard_url):
-          try:
-            '''
-            print('*****************')
-            print('Update detail dashboard' + dashboard_url)
-            print(yaml.safe_dump(sensor_info))
-            print('*****************')
-            '''
-            #Get the dashboard
-            device_dashboard = json.loads(requests.get(url=dashboard_url, headers=HEADERS).content)
-            #Update the caution and warning thredsholds
-            device_dashboard['dashboard']['panels'][0]['thresholds'][0]['value'] = int(sensor_info['warning'])
-            device_dashboard['dashboard']['panels'][0]['thresholds'][1]['value'] = int(sensor_info['caution'])
+    def update_detail_dashboard(sensor_info, dashboard_url):
+      try:
+        '''
+        print('*****************')
+        print('Update detail dashboard' + dashboard_url)
+        print(yaml.safe_dump(sensor_info))
+        print('*****************')
+        '''
+        #Get the dashboard
+        device_dashboard = json.loads(requests.get(url=dashboard_url, headers=HEADERS).content)
+        #Update the caution and warning thredsholds
+        device_dashboard['dashboard']['panels'][0]['thresholds'][0]['value'] = int(sensor_info['warning'])
+        device_dashboard['dashboard']['panels'][0]['thresholds'][1]['value'] = int(sensor_info['caution'])
 
-            #Update the device name in the panel CO2
-            for target in device_dashboard['dashboard']['panels'][0]['targets']:
-              if target['expr'] == 'CO2{exported_job="'+str(sensor_info['db_uid'])+'"}':
-                target['legendFormat'] = sensor_info['name']
-                break
-            #Update the device name in the panel Temperature
-            for target in device_dashboard['dashboard']['panels'][1]['targets']:
-              if target['expr'] == 'Temperature{exported_job="'+str(sensor_info['db_uid'])+'"}':
-                target['legendFormat'] = sensor_info['name']
-                break
-            #Update the device name in the panel Humidity
-            for target in device_dashboard['dashboard']['panels'][2]['targets']:
-              if target['expr'] == 'Humidity{exported_job="'+str(sensor_info['db_uid'])+'"}':
-                target['legendFormat'] = sensor_info['name']
-                break
+        #Update the device name in the panel CO2
+        for target in device_dashboard['dashboard']['panels'][0]['targets']:
+          if target['expr'] == 'CO2{exported_job="'+str(sensor_info['db_uid'])+'"}':
+            target['legendFormat'] = sensor_info['name']
+            break
+        #Update the device name in the panel Temperature
+        for target in device_dashboard['dashboard']['panels'][1]['targets']:
+          if target['expr'] == 'Temperature{exported_job="'+str(sensor_info['db_uid'])+'"}':
+            target['legendFormat'] = sensor_info['name']
+            break
+        #Update the device name in the panel Humidity
+        for target in device_dashboard['dashboard']['panels'][2]['targets']:
+          if target['expr'] == 'Humidity{exported_job="'+str(sensor_info['db_uid'])+'"}':
+            target['legendFormat'] = sensor_info['name']
+            break
 
-            device_dashboard['folderId'] = device_dashboard['meta']['folderId']
-            #Update the dashboard
-            response = post('http://' + GRAFANA_URL + '/api/dashboards/db', json.dumps(device_dashboard),HEADERS)
-          except requests.exceptions.RequestException as e:
-            raise SystemExit(e)
+        device_dashboard['folderId'] = device_dashboard['meta']['folderId']
+        #Update the dashboard
+        response = post('http://' + GRAFANA_URL + '/api/dashboards/db', json.dumps(device_dashboard),HEADERS)
+      except requests.exceptions.RequestException as e:
+        raise SystemExit(e)
 
     def update_device_dashboard(sensor_info, dashboard_url):
       try:
