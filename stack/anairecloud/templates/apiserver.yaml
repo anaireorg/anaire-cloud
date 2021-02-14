@@ -215,10 +215,14 @@ data:
           '&var-ABC=OFF' + \
           '&var-FRC=OFF'
 
-        device_dashboard['dashboard']['panels'][0]['thresholds'][0]['value'] = int(sensor_info['warning'])
-        device_dashboard['dashboard']['panels'][0]['thresholds'][1]['value'] = int(sensor_info['caution'])
+        #When an alert is defined thredshold section is disabled and it is used to
+        #represent the threshold that triggers the alarm with 'critical' color
         if 'alert'in device_dashboard['dashboard']['panels'][0]:
-          device_dashboard['dashboard']['panels'][0]['alert']['conditions'][0]['evaluator']['params'][0] = int(sensor_info['caution'])
+          device_dashboard['dashboard']['panels'][0]['alert']['conditions'][0]['evaluator']['params'][0] = int(sensor_info['warning'])
+        else:
+          device_dashboard['dashboard']['panels'][0]['thresholds'][1]['value'] = int(sensor_info['caution'])
+        device_dashboard['dashboard']['panels'][0]['thresholds'][0]['value'] = int(sensor_info['warning'])
+
         device_dashboard['folderId'] = device_dashboard['meta']['folderId']
         #Update the dashboard
         response = post('http://' + GRAFANA_URL + '/api/dashboards/db', json.dumps(device_dashboard),HEADERS)
