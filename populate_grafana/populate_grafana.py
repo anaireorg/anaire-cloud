@@ -246,8 +246,7 @@ def main():
         '/d/editor/editor?var-id=$uid&var-Warning=700&var-Caution=1000' + \
         '&var-db_uid=$uid&var-name=$name&var-Alarm=ON' + \
         '&var-FRC=OFF&var-update=OFF&var-factory_reset=OFF' + \
-        '&var-ABC=OFF&var-reboot=OFF' + \
-        '&var-MQTT_server=' + GRAFANA_IP
+        '&var-ABC=OFF&var-reboot=OFF'
 
         qr_dashboard = grafana_api.dashboard.update_dashboard({'dashboard': qr_dashboard_json})
         valid_ids.append(qr_dashboard['id'])
@@ -435,7 +434,7 @@ def main():
                       '&var-db_uid=' + str(dev_uid) + '&var-folderId=' + str(folderId) + \
                       '&var-Alarm=ON&var-FRC=OFF&var-update=OFF' + \
                       '&var-ABC=OFF&var-reboot=OFF' + \
-                      '&var-factory_reset=OFF&var-MQTT_server=' + GRAFANA_IP
+                      '&var-factory_reset=OFF'
             }]
             dashboard_json['dashboard']['panels'][0]['title'] = dashboard_config['messages'][language]['device_dashboard']['CO2']['title']
             dashboard_json['dashboard']['panels'][0]['description'] = dashboard_config['messages'][language]['device_dashboard']['CO2']['description'][0] + str(dev_name) + \

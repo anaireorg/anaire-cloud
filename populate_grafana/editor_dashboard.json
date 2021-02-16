@@ -439,8 +439,8 @@
       {
         "current": {
           "selected": false,
-          "text": "portal.anaire.org",
-          "value": "portal.anaire.org"
+          "text": "mqtt.anaire.org",
+          "value": "mqtt.anaire.org"
         },
         "error": null,
         "hide": 0,
@@ -449,19 +449,19 @@
         "options": [
           {
             "selected": true,
-            "text": "portal.anaire.org",
-            "value": "portal.anaire.org"
+            "text": "mqtt.anaire.org",
+            "value": "mqtt.anaire.org"
           }
         ],
-        "query": "portal.anaire.org",
+        "query": "mqtt.anaire.org",
         "skipUrlSync": false,
         "type": "textbox"
       },
       {
         "current": {
           "selected": false,
-          "text": "30183",
-          "value": "30183"
+          "text": "80",
+          "value": "80"
         },
         "error": null,
         "hide": 0,
@@ -470,11 +470,11 @@
         "options": [
           {
             "selected": true,
-            "text": "30183",
-            "value": "30183"
+            "text": "80",
+            "value": "80"
           }
         ],
-        "query": "30183",
+        "query": "80",
         "skipUrlSync": false,
         "type": "textbox"
       },
