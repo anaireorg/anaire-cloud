@@ -31,7 +31,8 @@ messages:
                 - ' measured by device '
         overview_dashboard:
             title: 'General'
-            link: 'Go to '
+            link: 'Detail'
+            link2: 'Instant value'
         detail_dashboard:
             title: 'Detail'
 
@@ -54,6 +55,7 @@ messages:
                 - ' medida por el dispositivo '
         overview_dashboard:
             title: 'General'
-            link: 'Ir a '
+            link: 'Detalle'
+            link2: 'Valor instantáneo'
         detail_dashboard:
             title: 'Detalle'

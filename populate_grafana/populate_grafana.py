@@ -470,9 +470,16 @@ def main():
           device_panel_json = json.loads(device_panel_template_json)
           device_panel_json['type'] = panel_type
           device_panel_json['title'] = str(dev_name)
-          device_panel_json['links'][0]['title'] = dashboard_config['messages'][language]['overview_dashboard']['link']+str(dev_name)
+          #device_panel_json['links'][0]['title'] = dashboard_config['messages'][language]['overview_dashboard']['link']+str(dev_name)
+          device_panel_json['links'][0]['title'] = dashboard_config['messages'][language]['overview_dashboard']['link']
           device_panel_json['links'][0]['url'] = device_panel_url
           device_panel_json['links'][0]['targetBlank'] = True
+          link2 = {
+            'title': dashboard_config['messages'][language]['overview_dashboard']['link2'],
+            'url': 'http://' + GRAFANA_IP + '/sensor/' + dashboard['uid'] + '/' + str(dev_name),
+            'targetBlank': True
+          }
+          device_panel_json['links'][0].add(link2)
           device_panel_json['fieldConfig']['defaults']['links'] = list()
           device_panel_json['fieldConfig']['defaults']['links'].append(dict())
           device_panel_json['fieldConfig']['defaults']['links'][0]['title'] = dashboard_config['messages'][language]['overview_dashboard']['link']+str(dev_name)
