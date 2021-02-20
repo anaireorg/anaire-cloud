@@ -476,7 +476,7 @@ def main():
           device_panel_json['links'][0]['targetBlank'] = True
           link2 = {
             'title': dashboard_config['messages'][language]['overview_dashboard']['link2'],
-            'url': 'http://' + GRAFANA_IP + '/sensor/' + dashboard['uid'] + '/' + str(dev_name),
+            'url': 'http://' + GRAFANA_IP + '/sensor/' + device_dashboard['uid'] + '/' + str(dev_name),
             'targetBlank': True
           }
           device_panel_json['links'].append(link2)
