@@ -479,12 +479,14 @@ def main():
             'url': 'http://' + GRAFANA_IP + '/sensor/' + dashboard['uid'] + '/' + str(dev_name),
             'targetBlank': True
           }
-          device_panel_json['links'][0].add(link2)
+          device_panel_json['links'].append(link2)
           device_panel_json['fieldConfig']['defaults']['links'] = list()
           device_panel_json['fieldConfig']['defaults']['links'].append(dict())
-          device_panel_json['fieldConfig']['defaults']['links'][0]['title'] = dashboard_config['messages'][language]['overview_dashboard']['link']+str(dev_name)
+          #device_panel_json['fieldConfig']['defaults']['links'][0]['title'] = dashboard_config['messages'][language]['overview_dashboard']['link']+str(dev_name)
+          device_panel_json['fieldConfig']['defaults']['links'][0]['title'] = dashboard_config['messages'][language]['overview_dashboard']['link']
           device_panel_json['fieldConfig']['defaults']['links'][0]['url'] = device_panel_url
           device_panel_json['fieldConfig']['defaults']['links'][0]['targetBlank'] = True
+          device_panel_json['fieldConfig']['defaults']['links'].append(link2)
           device_panel_json["gridPos"]['x'] = 0
           device_panel_json["gridPos"]['y'] = 0
           device_panel_json["gridPos"]['w'] = w_panel
