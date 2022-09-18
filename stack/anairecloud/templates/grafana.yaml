@@ -14,22 +14,45 @@ spec:
     spec:
       containers:
         - name: grafana
-          image: grafana/grafana
+          image: grafana/grafana:7.4.1
           env:
           - name: GF_AUTH_ANONYMOUS_ENABLED
             value: "true"
           - name: GF_SECURITY_ADMIN_PASSWORD
             value: "{{ .Values.grafanaAdminPass }}"
           - name: GF_SERVER_ROOT_URL
+          {{- if .Values.secondaryPublicIP }}
+            value: "http://{{ .Values.secondaryPublicIP }}"
+          {{- else }}
             value: "http://{{ .Values.publicIP }}"
+          {{- end }}
           - name: GF_RENDERING_SERVER_URL
             value: "http://grafana-image-renderer-cip:8081/render"
           - name: GF_RENDERING_CALLBACK_URL
+          {{- if .Values.secondaryPublicIP }}
+            value: "http://{{ .Values.secondaryPublicIP }}/"
+          {{- else }}
             value: "http://{{ .Values.publicIP }}/"
+          {{- end }}
           - name: GF_LOG_FILTERS
             value: rendering:debug
           - name: GF_INSTALL_PLUGINS
             value: "cloudspout-button-panel"
+          {{- if eq .Values.smtp_enabled true }}
+          - name: GF_SMTP_ENABLED
+            value: "{{ .Values.smtp_enabled }}"
+          - name: GF_SMTP_HOST
+            value: "{{ .Values.smtp_host }}"
+          - name: GF_SMTP_USER
+            value: "{{ .Values.smtp_user }}"
+          - name: GF_SMTP_PASSWORD
+            value: "{{ .Values.smtp_pass }}"
+          - name: GF_SMTP_FROM_ADDRESS
+            value: "{{ .Values.smtp_user }}"
+          - name: GF_SMTP_FROM_NAME
+            value: "{{ .Values.smtp_from }}"
+          {{- end }}
+
           args:
           volumeMounts:
             - name: grafana-storage-volume

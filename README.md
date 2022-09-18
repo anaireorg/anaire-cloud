@@ -43,7 +43,7 @@ Nosotros lo hemos orientado como la creación de una máquina virtual que contie
 # Detalle de la solución cloud
 ## Componentes
 En nuestra máquina virtual (o física) instalaremos un cluster Kubernetes (K8s). Dentro de este desplegaremos todos los componentes necesarios para nuestra solución. Estos son:
-* **Grafana:** Es la interfaz gráfica en la que se pueden consultar los valores de CO2, temperatura y humedad de cada sensor. Obtiene los datoss consultando a Prometheus.
+* **Grafana:** Es la interfaz gráfica en la que se pueden consultar los valores de CO2, temperatura y humedad de cada sensor. Obtiene los datos consultando a Prometheus.
 * **Prometheus:** Es el encargado de almacenar el histórico de todos los datos recibido por los sensores.
 * **Pushgateway:** Prometheus está pensado para consultar datos, no para que se los envíen. Ahí entra Pushgateway, quien es capaz de recibir los datos de los sensores y presentarlos de forma que Prometheus pueda consultarlos.
 * **Pushgateway cleaner:** Se trata de un cronjob, es decir, un proceso que se arranca periódicamente, se ejecuta y desaparece. Se utiliza para eliminar las entradas de Pushgateway de aquellos dispositivos que hace más de 5 minutos que no están generando datos.

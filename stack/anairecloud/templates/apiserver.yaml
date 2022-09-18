@@ -113,7 +113,7 @@ data:
             general_dashboard_url  = 'http://' + GRAFANA_URL + '/api/dashboards/uid/' + uid
             update_summary_dashboard(update, general_dashboard_url)
 
-        #Update the area dashboard
+        #Update the area and detail dashboard
         #Find the area dashboard with the appropriate folderId
         area_dashboard_list_url = 'http://' + GRAFANA_URL + '/api/search?type=dash-db&tag=area'
         area_dashboard_list = json.loads(requests.get(url=area_dashboard_list_url, headers=HEADERS).content)
@@ -121,6 +121,7 @@ data:
           if int(area_dashboard['folderId']) == int(update['folderId']):
             area_dashboard_url  = 'http://' + GRAFANA_URL + '/api/dashboards/uid/' + area_dashboard['uid']
             update_summary_dashboard(update, area_dashboard_url)
+            update_detail_dashboard(update, area_dashboard_url+'det')
             break
 
         #Update device dashboard
@@ -176,9 +177,47 @@ data:
           panel['fieldConfig']['defaults']['thresholds']['steps'][2]['value'] = sensor_info['warning']
           panel['fieldConfig']['defaults']['thresholds']['steps'][3]['value'] = sensor_info['caution']
           area_dashboard['folderId'] = area_dashboard['meta']['folderId']
+          panel['links'][0]['title'] = 'Ir a '+str(sensor_info['name'])
+          panel['fieldConfig']['defaults']['links'][0]['title'] = 'Ir a '+str(sensor_info['name'])
 
           #Update the dashboard
           response = post('http://' + GRAFANA_URL + '/api/dashboards/db', json.dumps(area_dashboard),HEADERS)
+      except requests.exceptions.RequestException as e:
+        raise SystemExit(e)
+
+    def update_detail_dashboard(sensor_info, dashboard_url):
+      try:
+        '''
+        print('*****************')
+        print('Update detail dashboard' + dashboard_url)
+        print(yaml.safe_dump(sensor_info))
+        print('*****************')
+        '''
+        #Get the dashboard
+        device_dashboard = json.loads(requests.get(url=dashboard_url, headers=HEADERS).content)
+        #Update the caution and warning thredsholds
+        device_dashboard['dashboard']['panels'][0]['thresholds'][0]['value'] = int(sensor_info['warning'])
+        device_dashboard['dashboard']['panels'][0]['thresholds'][1]['value'] = int(sensor_info['caution'])
+
+        #Update the device name in the panel CO2
+        for target in device_dashboard['dashboard']['panels'][0]['targets']:
+          if target['expr'] == 'CO2{exported_job="'+str(sensor_info['db_uid'])+'"}':
+            target['legendFormat'] = sensor_info['name']
+            break
+        #Update the device name in the panel Temperature
+        for target in device_dashboard['dashboard']['panels'][1]['targets']:
+          if target['expr'] == 'Temperature{exported_job="'+str(sensor_info['db_uid'])+'"}':
+            target['legendFormat'] = sensor_info['name']
+            break
+        #Update the device name in the panel Humidity
+        for target in device_dashboard['dashboard']['panels'][2]['targets']:
+          if target['expr'] == 'Humidity{exported_job="'+str(sensor_info['db_uid'])+'"}':
+            target['legendFormat'] = sensor_info['name']
+            break
+
+        device_dashboard['folderId'] = device_dashboard['meta']['folderId']
+        #Update the dashboard
+        response = post('http://' + GRAFANA_URL + '/api/dashboards/db', json.dumps(device_dashboard),HEADERS)
       except requests.exceptions.RequestException as e:
         raise SystemExit(e)
 
@@ -215,10 +254,15 @@ data:
           '&var-ABC=OFF' + \
           '&var-FRC=OFF'
 
-        device_dashboard['dashboard']['panels'][0]['thresholds'][0]['value'] = int(sensor_info['warning'])
-        device_dashboard['dashboard']['panels'][0]['thresholds'][1]['value'] = int(sensor_info['caution'])
+        #When an alert is defined thredshold section is disabled and it is used to
+        #represent the threshold that triggers the alarm with 'critical' color
         if 'alert'in device_dashboard['dashboard']['panels'][0]:
-          device_dashboard['dashboard']['panels'][0]['alert']['conditions'][0]['evaluator']['params'][0] = int(sensor_info['caution'])
+          device_dashboard['dashboard']['panels'][0]['alert']['conditions'][0]['evaluator']['params'][0] = int(sensor_info['warning'])
+          device_dashboard['dashboard']['panels'][0]['alert']['message'] = sensor_info['name']
+        else:
+          device_dashboard['dashboard']['panels'][0]['thresholds'][1]['value'] = int(sensor_info['caution'])
+        device_dashboard['dashboard']['panels'][0]['thresholds'][0]['value'] = int(sensor_info['warning'])
+
         device_dashboard['folderId'] = device_dashboard['meta']['folderId']
         #Update the dashboard
         response = post('http://' + GRAFANA_URL + '/api/dashboards/db', json.dumps(device_dashboard),HEADERS)

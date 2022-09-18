@@ -246,8 +246,7 @@ def main():
         '/d/editor/editor?var-id=$uid&var-Warning=700&var-Caution=1000' + \
         '&var-db_uid=$uid&var-name=$name&var-Alarm=ON' + \
         '&var-FRC=OFF&var-update=OFF&var-factory_reset=OFF' + \
-        '&var-ABC=OFF&var-reboot=OFF' + \
-        '&var-MQTT_server=' + GRAFANA_IP
+        '&var-ABC=OFF&var-reboot=OFF'
 
         qr_dashboard = grafana_api.dashboard.update_dashboard({'dashboard': qr_dashboard_json})
         valid_ids.append(qr_dashboard['id'])
@@ -387,23 +386,31 @@ def main():
         for device in directory["device"]:
           dev_name = str(device["name"])
           dev_uid = device["uid"]
+          #if there is an overwrite field that equals to True then the device
+          #dashboard must be overwriten
+          overwrite = device.get('overwrite', False)
           print('  '+str(dev_name)+':')
 
-          #Add device to the area device dashboards
-          detail_json['dashboard']['panels'][0]['targets'].append({'expr': "CO2{exported_job=\""+str(dev_uid)+"\"}", 'legendFormat': dev_name, 'refId': dev_name})
-          detail_json['dashboard']['panels'][1]['targets'].append({'expr': "Temperature{exported_job=\""+str(dev_uid)+"\"}", 'legendFormat': dev_name, 'refId': dev_name})
-          detail_json['dashboard']['panels'][2]['targets'].append({'expr': "Humidity{exported_job=\""+str(dev_uid)+"\"}", 'legendFormat': dev_name, 'refId': dev_name})
-
-          #Check if there is alredy a dashboard called <dev_name> in folder <folderId>
+          #If not overgwrite check if there is alredy a dashboard with this id
           existe = False
-          sensor_dashboard_list_url = 'http://' + GRAFANA_URL + '/api/search?type=dash-db&query='+str(dev_name)
-          sensor_dashboard_list = json.loads(requests.get(url=sensor_dashboard_list_url, headers=HEADERS).content)
-          for dashboard in sensor_dashboard_list:
-            if 'folderId' in dashboard and dashboard['folderId'] == folderId:
-              existe = True
-              sensor_dashboard_url = 'http://' + GRAFANA_URL + '/api/dashboards/uid/' + dashboard['uid']
-              device_dashboard = json.loads(requests.get(url=sensor_dashboard_url, headers=HEADERS).content)['dashboard']
-              break
+          if not overwrite:
+            url = 'http://' + GRAFANA_URL + '/api/dashboards/uid/'+str(dev_uid)
+            response = requests.get(url=url, headers=HEADERS)
+            if response.status_code == 200:
+                existe = True
+                content = json.loads(response.content)
+                device_dashboard = content['dashboard']
+                dev_name = device_dashboard['title']
+                #if it is in a different folder update dashboard with folderId
+                if content['meta']['folderId'] != folderId:
+                    dashboard_json = {'folderId': folderId, 'dashboard': device_dashboard}
+                    dashboard = grafana_api.dashboard.update_dashboard(dashboard_json)
+
+
+          #Add device to the area device dashboards
+          detail_json['dashboard']['panels'][0]['targets'].append({'expr': "CO2{exported_job=\""+str(dev_uid)+"\"}", 'legendFormat': dev_name, 'refId': str(dev_uid)})
+          detail_json['dashboard']['panels'][1]['targets'].append({'expr': "Temperature{exported_job=\""+str(dev_uid)+"\"}", 'legendFormat': dev_name, 'refId': str(dev_uid)})
+          detail_json['dashboard']['panels'][2]['targets'].append({'expr': "Humidity{exported_job=\""+str(dev_uid)+"\"}", 'legendFormat': dev_name, 'refId': str(dev_uid)})
 
           if (not existe):
             #Create device detailed dashboard
@@ -427,7 +434,7 @@ def main():
                       '&var-db_uid=' + str(dev_uid) + '&var-folderId=' + str(folderId) + \
                       '&var-Alarm=ON&var-FRC=OFF&var-update=OFF' + \
                       '&var-ABC=OFF&var-reboot=OFF' + \
-                      '&var-factory_reset=OFF&var-MQTT_server=' + GRAFANA_IP
+                      '&var-factory_reset=OFF'
             }]
             dashboard_json['dashboard']['panels'][0]['title'] = dashboard_config['messages'][language]['device_dashboard']['CO2']['title']
             dashboard_json['dashboard']['panels'][0]['description'] = dashboard_config['messages'][language]['device_dashboard']['CO2']['description'][0] + str(dev_name) + \
@@ -451,7 +458,11 @@ def main():
             device_dashboard = json.loads(requests.get(url=sensor_dashboard_url, headers=HEADERS).content)['dashboard']
 
           warning = device_dashboard['panels'][0]['thresholds'][0]['value']
-          caution = device_dashboard['panels'][0]['thresholds'][1]['value']
+          #If alarm is declared in the device only one threshold appears, that is the one defined ty the alarm.
+          if len(device_dashboard['panels'][0]['thresholds']) > 1:
+            caution = device_dashboard['panels'][0]['thresholds'][1]['value']
+          else:
+            caution = dashboard_config['overview_dashboards']['thresholds']['caution']
           valid_ids.append(device_dashboard['id'])
 
           #Create device CO2 panel
@@ -459,14 +470,23 @@ def main():
           device_panel_json = json.loads(device_panel_template_json)
           device_panel_json['type'] = panel_type
           device_panel_json['title'] = str(dev_name)
-          device_panel_json['links'][0]['title'] = dashboard_config['messages'][language]['overview_dashboard']['link']+str(dev_name)
+          #device_panel_json['links'][0]['title'] = dashboard_config['messages'][language]['overview_dashboard']['link']+str(dev_name)
+          device_panel_json['links'][0]['title'] = dashboard_config['messages'][language]['overview_dashboard']['link']
           device_panel_json['links'][0]['url'] = device_panel_url
           device_panel_json['links'][0]['targetBlank'] = True
+          link2 = {
+            'title': dashboard_config['messages'][language]['overview_dashboard']['link2'],
+            'url': 'http://' + GRAFANA_IP + '/sensor/' + device_dashboard['uid'] + '/' + str(dev_name),
+            'targetBlank': True
+          }
+          device_panel_json['links'].append(link2)
           device_panel_json['fieldConfig']['defaults']['links'] = list()
           device_panel_json['fieldConfig']['defaults']['links'].append(dict())
-          device_panel_json['fieldConfig']['defaults']['links'][0]['title'] = dashboard_config['messages'][language]['overview_dashboard']['link']+str(dev_name)
+          #device_panel_json['fieldConfig']['defaults']['links'][0]['title'] = dashboard_config['messages'][language]['overview_dashboard']['link']+str(dev_name)
+          device_panel_json['fieldConfig']['defaults']['links'][0]['title'] = dashboard_config['messages'][language]['overview_dashboard']['link']
           device_panel_json['fieldConfig']['defaults']['links'][0]['url'] = device_panel_url
           device_panel_json['fieldConfig']['defaults']['links'][0]['targetBlank'] = True
+          device_panel_json['fieldConfig']['defaults']['links'].append(link2)
           device_panel_json["gridPos"]['x'] = 0
           device_panel_json["gridPos"]['y'] = 0
           device_panel_json["gridPos"]['w'] = w_panel
