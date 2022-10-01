@@ -1,4 +1,6 @@
 # Anaire Cloud
+Aplicación en la nube para la visualización de los datos de los dispositivos de Anaire (CO2, temperatura y humedad) y la configuración remota de los dispositivos a través de su conexión a Internet.
+
 - [¿Qué background necesito para poner este proyecto en marcha?](#qu%C3%A9-background-necesito-para-poner-este-proyecto-en-marcha)
 - [Descripción de la solución Cloud](#descripci%C3%B3n-de-la-soluci%C3%B3n-cloud)
 - [Detalle de la solución cloud](#detalle-de-la-soluci%C3%B3n-cloud)
