@@ -3,7 +3,7 @@ LOG_LOCATION=/home/ubuntu
 exec > >(tee -i $LOG_LOCATION/userdata.txt)
 exec 2>&1
 sudo apt update && sudo apt install -y jq unzip git
-sudo apt upgrade -y snapd
+sudo apt upgrade -y snap
 
 #==========================VARIABLES=================================
 #AWS variables
