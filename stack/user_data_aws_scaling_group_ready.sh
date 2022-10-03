@@ -3,6 +3,7 @@ LOG_LOCATION=/home/ubuntu
 exec > >(tee -i $LOG_LOCATION/userdata.txt)
 exec 2>&1
 sudo apt update && sudo apt install -y jq unzip git
+sudo apt upgrade -y snapd
 
 #==========================VARIABLES=================================
 #AWS variables
@@ -54,7 +55,7 @@ done
 
 #===============Install K8s and helm3=======================
 #Create all in one kubernetes
-sudo snap install microk8s --classic
+sudo snap install microk8s --classic --channel=1.23/stable
 sudo usermod -a -G microk8s ubuntu
 sudo microk8s.enable dns
 sudo microk8s.enable helm3
