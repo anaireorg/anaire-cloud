@@ -62,7 +62,7 @@ data:
       except requests.exceptions.RequestException as e:  # This is the correct syntax
         raise SystemExit(e)
 
-    def on_connect(client, userdata, flags, rc):
+    def on_connect(client, userdata, flags, reason_code, properties):
         # connect mqtt broker
         client.subscribe([("measurement", 0)])
         
@@ -86,7 +86,7 @@ data:
           print('Usage: '+sys.argv[0]+' <pushgateway IP> <mqttbroker IP>. Found '+len(sys.argv)+' arguments.')
           exit()
       
-      client = mqtt.Client()
+      client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
       client.connect(sys.argv[2], 1883)
       client.on_connect = on_connect
       client.on_message = on_message
