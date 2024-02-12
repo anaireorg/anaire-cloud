@@ -87,7 +87,7 @@ data:
     HEADERS = {'Authorization': 'Basic '+base64.b64encode((ADMIN_LOGIN+':'+ADMIN_PASS).encode('ascii')).decode('ascii'), 'Content-type': 'application/json'}
     #reference dict
     reference_dict = {}
-    client = mqtt.Client()
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 
     @route('/update')
     def do_update():
@@ -148,7 +148,7 @@ data:
         }
         client.publish("config/" + str(update['id']),json.dumps(data))
 
-    def on_publish(client,userdata,result):
+    def on_publish(client, userdata, mid, reason_codes, properties):
       print("data published \n")
       pass
 
